@@ -7,20 +7,29 @@ class CreateCurrentSessionsModel {
     this.spreadsheetId = "1klunF-HoDO1PKMQ2Plx7VyHBf5EHuoxvF2J4KJEimE4";
   }
 
-  async CreateCurrentSessionsModel() {
+  async createCurrentSession(sessionData) {
     await this.googleSheetsAuth.authenticate();
     const auth = this.googleSheetsAuth.getGoogleSheets();
 
-    const writeRow = await auth.spreadsheets.values.append({
+    // Utilisez les données de session pour créer une nouvelle entrée
+    const sessionRow = [
+      sessionData.client.name,
+      sessionData.client.phone,
+      sessionData.client.address,
+      sessionData.client.siren,
+      sessionData.createdAt,
+      sessionData.endAt,
+    ];
+
+    const writeRow = await auth.spreadsheets.values.update({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A:B",
+      range: "CurrentSessions!A:F",
       valueInputOption: "USER_ENTERED",
       resource: {
-        values: [["Hello", "World"]],
+        values: [sessionRow],
       },
     });
-
-    return getRows.data.values;
+    return writeRow.data.values;
   }
 }
 

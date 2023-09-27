@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const controller = require("../controllers/CreateCurrentSessionsController");
+const { CreateCurrentSessionsController } = require("../controllers");
 
-router.get("/", controller.get);
+router.post("/", CreateCurrentSessionsController.post);
 
 module.exports = router;
