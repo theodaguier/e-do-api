@@ -3,19 +3,12 @@ const { CreateCurrentSessionsModel, SessionModel } = require("../models");
 class CreateCurrentSessionsController {
   async post(req, res) {
     try {
-      // Extrait les données de la requête POST
       const { client, reservations, equipments, createdAt, endAt } = req.body;
 
-      // Continuez avec le traitement des données
       const session = new SessionModel(
-        {
-          address: client.address,
-          name: client.name,
-          phone: client.phone,
-          siren: client.siren,
-        },
-        reservations || [],
-        equipments || [],
+        client,
+        reservations,
+        equipments,
         createdAt,
         endAt
       );

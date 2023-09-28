@@ -11,24 +11,37 @@ class CreateCurrentSessionsModel {
     await this.googleSheetsAuth.authenticate();
     const auth = this.googleSheetsAuth.getGoogleSheets();
 
-    // Utilisez les données de session pour créer une nouvelle entrée
     const sessionRow = [
       sessionData.client.name,
-      sessionData.client.phone,
       sessionData.client.address,
+      sessionData.client.phone,
       sessionData.client.siren,
+      (sessionData.equipments || [])
+        .map((equipment) => {
+          return `${equipment.equipment} (${equipment.quantity})`;
+        })
+        .join(", "), // Update this line
+      (sessionData.reservations || [])
+        .map((reservation) => {
+          return `${reservation.hours}h ${reservation.machine}`;
+        })
+        .join("/ "), // Update this line
       sessionData.createdAt,
       sessionData.endAt,
     ];
 
-    const writeRow = await auth.spreadsheets.values.update({
+    console.log("reservations:", sessionData.reservations);
+    console.log("equipments:", sessionData.equipments);
+
+    const writeRow = await auth.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A:F",
+      range: "CurrentSessions!A:H",
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [sessionRow],
       },
     });
+
     return writeRow.data.values;
   }
 }
