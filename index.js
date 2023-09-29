@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 app.use("/api/get-current-sessions", getCurrentSessionsRoute);
 app.use("/api/create-current-sessions", CreateCurrentSessionsController.post);
-app.use("/api/get-equipments", getEquipmentRoute);
+app.use("/api/get-equipments", GetEquipmentController.get);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
