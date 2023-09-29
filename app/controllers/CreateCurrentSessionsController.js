@@ -3,9 +3,11 @@ const { CreateCurrentSessionsModel, SessionModel } = require("../models");
 class CreateCurrentSessionsController {
   async post(req, res) {
     try {
-      const { client, reservations, equipments, createdAt, endAt } = req.body;
+      const { id, client, reservations, equipments, createdAt, endAt } =
+        req.body;
 
       const session = new SessionModel(
+        id,
         client,
         reservations,
         equipments,

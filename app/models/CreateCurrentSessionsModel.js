@@ -12,20 +12,21 @@ class CreateCurrentSessionsModel {
     const auth = this.googleSheetsAuth.getGoogleSheets();
 
     const sessionRow = [
+      sessionData.id,
       sessionData.client.name,
       sessionData.client.address,
       sessionData.client.phone,
       sessionData.client.siren,
-      (sessionData.equipments || [])
-        .map((equipment) => {
-          return `${equipment.equipment} (${equipment.quantity})`;
-        })
-        .join(", "), // Update this line
       (sessionData.reservations || [])
         .map((reservation) => {
           return `${reservation.hours}h ${reservation.machine}`;
         })
-        .join("/ "), // Update this line
+        .join(", "),
+      (sessionData.equipments || [])
+        .map((equipment) => {
+          return `${equipment.equipment} (${equipment.quantity})`;
+        })
+        .join(", "),
       sessionData.createdAt,
       sessionData.endAt,
     ];

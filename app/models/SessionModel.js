@@ -1,5 +1,6 @@
 class SessionModel {
-  constructor(client, reservations, equipments, createdAt, endAt) {
+  constructor(id, client, reservations, equipments, createdAt, endAt) {
+    this.id = id;
     this.client = client;
     this.reservations = reservations;
     this.equipments = equipments;
