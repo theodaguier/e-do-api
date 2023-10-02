@@ -49,11 +49,11 @@ class EquipmentModel {
 
   async getEquipmentByCategory(cat) {
     const equipments = await this.getEquipment();
-    const filteredEquipments = equipments.filter(
+    const equipmentsByCategory = equipments.filter(
       (equipment) => equipment.cat === cat
     );
 
-    return filteredEquipments;
+    return equipmentsByCategory;
   }
 
   async createEquipment(equipment) {

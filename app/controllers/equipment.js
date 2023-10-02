@@ -26,17 +26,14 @@ class EquipmentController {
 
   async getByCategory(req, res) {
     const { cat } = req.params;
-    const equipment = await EquipmentModel.getEquipment();
+    console.log(cat);
+    const equipment = await EquipmentModel.getEquipmentByCategory(cat);
 
-    const filteredEquipments = equipment.filter((equipment) => {
-      return equipment.cat === cat && equipment.cat !== null;
-    });
-
-    if (!filteredEquipments) {
+    if (!equipment) {
       return res.status(404).send("Equipment not found");
     }
 
-    res.json(filteredEquipments);
+    res.json(equipment);
   }
 
   async post(req, res) {

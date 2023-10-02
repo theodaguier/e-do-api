@@ -8,6 +8,7 @@ const { CurrentSessionsModel } = require("./app/models");
 const {
   CurrentSessionsController,
   EquipmentController,
+  ClientController,
 } = require("./app/controllers/");
 
 const app = express();
@@ -18,9 +19,13 @@ app.use(bodyParser.json());
 
 app.use("/api/get-current-sessions", currentSession);
 app.use("/api/create-current-sessions", CurrentSessionsController.post);
-app.use("/api/get-equipments", EquipmentController.get);
 app.use("/api/create-equipment", EquipmentController.post);
+app.use("/api/get-equipments/all", EquipmentController.get);
 app.use("/api/get-equipments/:cat", EquipmentController.getByCategory);
+app.use("/api/get-equipments/byId/:id", EquipmentController.getById);
+app.use("/api/get-clients/all", ClientController.get);
+app.use("/api/get-clients/:id", ClientController.getById);
+app.use("/api/create-clients", ClientController.post);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
@@ -59,7 +64,7 @@ app.listen(process.env.PORT, () => {
 // });
 
 /**
- * Test to end an equipment
+ * Test to add an equipment
  */
 
 // requestData.forEach((equipment) => {
@@ -142,6 +147,14 @@ app.listen(process.env.PORT, () => {
 
 // Test pour récupérer un équipement selon sa catégorie
 
-axios.get("http://localhost:3000/api/get-equipments/cameras").then((res) => {
-  console.log("res:", res.data);
+// axios.get("http://localhost:3000/api/get-equipments/all").then((res) => {
+//   console.log(res.data);
+// });
+
+axios.post("http://localhost:3000/api/create-clients", {
+  id: 1,
+  name: "John Doe",
+  address: "123 Main St",
+  phone: "555-555-5555",
+  siren: "123456789",
 });
