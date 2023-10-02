@@ -115,7 +115,7 @@ app.listen(process.env.PORT, () => {
 // async function getEquipmentFromFirebase() {
 //   try {
 //     // Reference the "equipments" collection correctly using the db instance
-//     const equipmentsCollection = collection(db, "equipments");
+//     const equipmentsCollection = collection(db, "clients");
 
 //     const equipmentsSnapshot = await getDocs(equipmentsCollection);
 
@@ -145,16 +145,23 @@ app.listen(process.env.PORT, () => {
 //   },
 // });
 
-// Test pour récupérer un équipement selon sa catégorie
-
 // axios.get("http://localhost:3000/api/get-equipments/all").then((res) => {
 //   console.log(res.data);
 // });
 
-axios.post("http://localhost:3000/api/create-clients", {
-  id: 1,
-  name: "John Doe",
-  address: "123 Main St",
-  phone: "555-555-5555",
-  siren: "123456789",
+// axios.post("http://localhost:3000/api/create-clients", {
+//   name: "John Doe",
+//   address: "123 Main St",
+//   phone: 555 - 555 - 5555,
+//   siren: 123456789,
+//   brand: "Brand",
+//   email: "test@",
+// });
+
+// axios.get("http://localhost:3000/api/get-clients/all").then((res) => {
+//   console.log(res.data);
+// });
+
+axios.get("http://localhost:3000/api/get-equipments/all").then((res) => {
+  console.log(res.data);
 });

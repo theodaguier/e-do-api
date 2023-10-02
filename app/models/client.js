@@ -1,5 +1,6 @@
 const { google } = require("googleapis");
 const { GoogleSheetsAuth } = require("../services");
+const uuid = require("uuid");
 
 class ClientModel {
   constructor(id, name, address, brand, siren, phone, email) {
@@ -29,7 +30,7 @@ class ClientModel {
 
     const filteredClients = rows?.slice(1).map((row, index) => {
       const client = {
-        id: Number(row[0]),
+        id: row[0],
         name: row[1],
         address: row[2],
         brand: row[3],
@@ -52,9 +53,8 @@ class ClientModel {
   }
 
   async createClient(client) {
+    const newId = uuid.v4();
     const clients = await this.getClients();
-
-    const newId = clients[clients.length - 1].id + 1;
 
     const newClient = {
       id: newId,
@@ -66,25 +66,24 @@ class ClientModel {
       email: client.email,
     };
 
-    const newClients = [...clients, newClient];
-
-    await this.googleSheetsAuth.authenticate();
     const auth = this.googleSheetsAuth.getGoogleSheets();
 
-    const updateSheet = await auth.spreadsheets.values.update({
+    await auth.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
       range: "Clients!A2:G",
       valueInputOption: "USER_ENTERED",
       resource: {
-        values: newClients.map((client) => [
-          client.id,
-          client.name,
-          client.address,
-          client.brand,
-          client.siren,
-          client.phone,
-          client.email,
-        ]),
+        values: [
+          [
+            newClient.id,
+            newClient.name,
+            newClient.address,
+            newClient.brand,
+            newClient.siren,
+            newClient.phone,
+            newClient.email,
+          ],
+        ],
       },
     });
 
