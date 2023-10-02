@@ -1,9 +1,7 @@
-const getCurrentSessionsRoute = require("./GetCurrentSessionsRoute");
-const createCurrentSessionsRoute = require("./CreateCurrentSessionsRoute");
-const getEquipmentRoute = require("./GetEquipmentRoute");
+const currentSession = require("./currentSession");
+const equipment = require("./equipment");
 
 module.exports = {
-  getCurrentSessionsRoute,
-  createCurrentSessionsRoute,
-  getEquipmentRoute,
+  currentSession,
+  equipment,
 };

@@ -1,9 +1,7 @@
-const CreateCurrentSessionsController = require("./CreateCurrentSessionsController");
-const GetCurrentSessionsController = require("./GetCurrentSessionsController");
-const GetEquipmentController = require("./GetEquipmentController");
+const CurrentSessionsController = require("./currentSession");
+const EquipmentController = require("./equipment");
 
 module.exports = {
-  GetEquipmentController,
-  CreateCurrentSessionsController,
-  GetCurrentSessionsController,
+  CurrentSessionsController,
+  EquipmentController,
 };
