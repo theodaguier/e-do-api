@@ -146,6 +146,8 @@ class CurrentSessionsModel {
     const rows = getRows.data.values;
 
     // Trouve la ligne de la session à mettre à jour
+    const sessionIndex = rows.findIndex((row) => row[0] === id);
+    console.log("sessionIndex:", sessionIndex);
     const sessionRow = rows.find((row) => row[0] === id);
 
     // Vérifie si la session existe
@@ -153,13 +155,38 @@ class CurrentSessionsModel {
       throw new Error("Session does not exist");
     }
 
-    // Met à jour la colonne des équipements, attention si la session a déjà des équipements de ne pas les supprimer !
-    sessionRow[6] = sessionData.equipments
+    // Analysez la valeur actuelle de la cellule des équipements et convertissez-la en un tableau d'équipements existants
+    const existingEquipments = sessionRow[6]
+      ? sessionRow[6].split(", ").map((item) => {
+          const [equipment, quantity] = item.split(" (");
+          return { equipment, quantity: parseInt(quantity) };
+        })
+      : [];
+
+    // Parcourez le tableau existant pour rechercher un équipement avec le même nom
+    for (const equipmentData of sessionData.equipments) {
+      const existingEquipment = existingEquipments.find(
+        (item) => item.equipment === equipmentData.equipment
+      );
+
+      if (existingEquipment) {
+        // Si vous trouvez un équipement avec le même nom, ajoutez simplement la nouvelle quantité à la quantité existante
+        existingEquipment.quantity += equipmentData.quantity;
+      } else {
+        // Sinon, ajoutez le nouvel équipement à la liste existante
+        existingEquipments.push(equipmentData);
+      }
+    }
+
+    // Mettez à jour la cellule des équipements avec la liste mise à jour
+    sessionRow[6] = existingEquipments
       .map((equipment) => `${equipment.equipment} (${equipment.quantity})`)
       .join(", ");
 
     // Récupère l'index de la ligne
     const sessionRowIndex = rows.indexOf(sessionRow);
+
+    console.log("sessionRowIndex:", sessionRowIndex);
 
     // Met à jour la ligne dans Google Sheets
     const writeRow = await auth.spreadsheets.values.update({

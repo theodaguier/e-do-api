@@ -178,18 +178,18 @@ app.listen(process.env.PORT, () => {
 // const requestData = [{ equipment: "Equipment 1", quantity: 2 }];
 
 const testUpdate = {
-  client: {
-    address: "123 Main St",
-    name: "John Doe",
-    phone: "555-555-5555",
-    siren: "123456789",
-  },
-  reservations: [
-    { hours: 1, machine: "Machine 1" },
-    { hours: 2, machine: "Machine 2" },
-  ],
-  equipments: [{ equipment: "TEST 2", quantity: 110 }],
-  createdAt: "2022-01-01T00:00:00.000Z",
+  // client: {
+  //   address: "123 Main St",
+  //   name: "John Doe",
+  //   phone: "555-555-5555",
+  //   siren: "123456789",
+  // },
+  // reservations: [
+  //   { hours: 1, machine: "Machine 1" },
+  //   { hours: 2, machine: "Machine 2" },
+  // ],
+  equipments: [{ equipment: "TEST 900", quantity: 19 }],
+  // createdAt: "2022-01-01T00:00:00.000Z",
 };
 
 // const data = JSON.stringify(requestData);
