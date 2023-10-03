@@ -15,6 +15,8 @@ class CurrentSessionsModel {
       "reservations",
       "equipments",
       "createdAt",
+      "endAt",
+      "updatedAt",
     ];
   }
 
@@ -26,7 +28,7 @@ class CurrentSessionsModel {
 
     const getRows = await auth.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A2:H",
+      range: "CurrentSessions!A3:J",
     });
 
     const rows = getRows.data.values;
@@ -44,6 +46,9 @@ class CurrentSessionsModel {
           name: equipment,
           quantity: 1,
         })),
+        createdAt: row[6],
+        endAt: row[7],
+        updatedAt: row[8],
       };
 
       // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
@@ -83,7 +88,7 @@ class CurrentSessionsModel {
 
     const getRows = await auth.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A2:H",
+      range: "CurrentSessions!A3:J",
     });
 
     const rows = getRows.data.values;
@@ -101,6 +106,9 @@ class CurrentSessionsModel {
           name: equipment,
           quantity: 1,
         })),
+        createdAt: row[6],
+        endAt: row[7],
+        updatedAt: row[8],
       };
 
       // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
@@ -140,14 +148,14 @@ class CurrentSessionsModel {
 
     const getRows = await auth.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A2:H",
+      range: "CurrentSessions!A2:J",
     });
 
     const rows = getRows.data.values;
 
     // Trouve la ligne de la session à mettre à jour
     const sessionIndex = rows.findIndex((row) => row[0] === id);
-    console.log("sessionIndex:", sessionIndex);
+
     const sessionRow = rows.find((row) => row[0] === id);
 
     // Vérifie si la session existe
@@ -191,7 +199,7 @@ class CurrentSessionsModel {
     // Met à jour la ligne dans Google Sheets
     const writeRow = await auth.spreadsheets.values.update({
       spreadsheetId: this.spreadsheetId,
-      range: `CurrentSessions!A${sessionRowIndex + 2}:H${sessionRowIndex + 2}`,
+      range: `CurrentSessions!A${sessionRowIndex + 2}:J${sessionRowIndex + 2}`,
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [sessionRow],
@@ -208,7 +216,7 @@ class CurrentSessionsModel {
 
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
-        range: "CurrentSessions!A:H",
+        range: "CurrentSessions!A3:J",
       });
 
       const rows = getRows.data.values;
@@ -230,7 +238,7 @@ class CurrentSessionsModel {
 
       const writeRow = await auth.spreadsheets.values.update({
         spreadsheetId: this.spreadsheetId,
-        range: `CurrentSessions!A${sessionRow}:H${sessionRow}`,
+        range: `CurrentSessions!A3${sessionRow}:J${sessionRow}`,
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [sessionRow],
@@ -265,14 +273,12 @@ class CurrentSessionsModel {
         .join(", "),
       sessionData.createdAt,
       sessionData.endAt,
+      sessionData.updatedAt,
     ];
-
-    console.log("reservations:", sessionData.reservations);
-    console.log("equipments:", sessionData.equipments);
 
     const writeRow = await auth.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A:H",
+      range: "CurrentSessions!A3:J",
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [sessionRow],

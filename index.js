@@ -54,12 +54,13 @@ app.listen(process.env.PORT, () => {
 //     { hours: 1, machine: "Machine 1" },
 //     { hours: 2, machine: "Machine 2" },
 //   ],
-//   equipments: [
-//     { equipment: "Equipment 1", quantity: 2 },
-//     { equipment: "Equipment 2", quantity: 3 },
-//   ],
+//   // equipments: [
+//   //   { equipment: "Equipment 1", quantity: 2 },
+//   //   { equipment: "Equipment 2", quantity: 3 },
+//   // ],
 //   createdAt: "2022-01-01T00:00:00.000Z",
 //   endAt: "2022-01-01T01:00:00.000Z",
+//   updatedAt: new Date(),
 // };
 
 // const data = JSON.stringify(requestData);
@@ -122,7 +123,7 @@ app.listen(process.env.PORT, () => {
 // async function getEquipmentFromFirebase() {
 //   try {
 //     // Reference the "equipments" collection correctly using the db instance
-//     const equipmentsCollection = collection(db, "clients");
+//     const equipmentsCollection = collection(db, "consumables");
 
 //     const equipmentsSnapshot = await getDocs(equipmentsCollection);
 
@@ -146,7 +147,89 @@ app.listen(process.env.PORT, () => {
 //     console.error("Error:", error);
 //   });
 
-// axios.post("http://localhost:3000/api/create-equipment", equipments, {
+// const dataToSend = { name: "AA/LR6 X4", price: 10, qty: 0, cat: "consumables" };
+// const test = [
+//   {
+//     name: "Lacie 2TB",
+//     price: 149,
+//     qty: 0,
+//     cat: "consumables",
+//   },
+//   {
+//     qty: 0,
+//     price: 1,
+//     name: "Coffee",
+//     cat: "consumables",
+//   },
+//   {
+//     name: "backdrop (FULL)",
+//     price: 150,
+//     qty: 0,
+//     cat: "consumables",
+//   },
+//   {
+//     price: 15,
+//     name: "AA/LR6 Energizer",
+//     qty: 0,
+//     cat: "consumables",
+//   },
+//   {
+//     name: "Cinéfoil (Meter)",
+//     qty: 0,
+//     price: 15,
+//     cat: "consumables",
+//   },
+//   {
+//     name: "Tea",
+//     price: 1,
+//     qty: 0,
+//     cat: "consumables",
+//   },
+//   {
+//     qty: 0,
+//     name: "Tape",
+//     price: 20,
+//     cat: "consumables",
+//   },
+//   {
+//     price: 10,
+//     qty: 0,
+//     name: "AAA/LR03 Energizer X4",
+//     cat: "consumables",
+//   },
+//   {
+//     name: "Sheets A4",
+//     qty: 0,
+//     price: 50,
+//     cat: "consumables",
+//   },
+//   {
+//     qty: 0,
+//     name: "Color Gels (Meter)",
+//     price: 18,
+//     cat: "consumables",
+//   },
+//   {
+//     price: 5,
+//     name: "AA/LR03 X4",
+//     qty: 0,
+//     cat: "consumables",
+//   },
+//   {
+//     price: 15,
+//     qty: 0,
+//     name: "Battery Set",
+//     cat: "consumables",
+//   },
+//   {
+//     name: "AA/LR6 X4",
+//     price: 10,
+//     qty: 0,
+//     cat: "consumables",
+//   },
+// ];
+
+// axios.post("http://localhost:3000/api/create-equipment", dataToSend, {
 //   headers: {
 //     "Content-Type": "application/json",
 //   },
@@ -169,40 +252,44 @@ app.listen(process.env.PORT, () => {
 //   console.log(res.data);
 // });
 
-// axios.get("http://localhost:3000/api/get-equipments/all").then((res) => {
-//   console.log(res.data);
-// });
+axios
+  .get("http://localhost:3000/api/get-equipments/consumables")
+  .then((res) => {
+    console.log(res.data);
+  });
 
 // Test pour update une session en cours
 
 // const requestData = [{ equipment: "Equipment 1", quantity: 2 }];
 
-const testUpdate = {
-  // client: {
-  //   address: "123 Main St",
-  //   name: "John Doe",
-  //   phone: "555-555-5555",
-  //   siren: "123456789",
-  // },
-  // reservations: [
-  //   { hours: 1, machine: "Machine 1" },
-  //   { hours: 2, machine: "Machine 2" },
-  // ],
-  equipments: [{ equipment: "TEST 900", quantity: 19 }],
-  // createdAt: "2022-01-01T00:00:00.000Z",
-};
+// const testUpdate = {
+//   // client: {
+//   //   address: "123 Main St",
+//   //   name: "John Doe",
+//   //   phone: "555-555-5555",
+//   //   siren: "123456789",
+//   // },
+//   // reservations: [
+//   //   { hours: 1, machine: "Machine 1" },
+//   //   { hours: 2, machine: "Machine 2" },
+//   // ],
+//   equipments: [{ equipment: "TEST 900", quantity: 19 }],
+//   updatedAt: new Date(),
 
-// const data = JSON.stringify(requestData);
+//   // createdAt: "2022-01-01T00:00:00.000Z",
+// };
 
-axios.post(
-  "http://localhost:3000/api/update-current-session/3f3f927d-16ad-4f67-b927-ea531bc9d116",
-  testUpdate,
-  {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }
-);
+// // const data = JSON.stringify(requestData);
+
+// axios.post(
+//   "http://localhost:3000/api/update-current-session/3f3f927d-16ad-4f67-b927-ea531bc9d116",
+//   testUpdate,
+//   {
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   }
+// );
 
 // axios
 //   .get(

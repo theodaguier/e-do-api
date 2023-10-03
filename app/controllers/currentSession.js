@@ -19,7 +19,8 @@ class CurrentSessionsController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { client, reservations, equipments, createdAt, endAt } = req.body;
+      const { client, reservations, equipments, createdAt, endAt, updatedAt } =
+        req.body;
 
       // Vérifie si la session existe
       const session = await CurrentSessionsModel.getCurrentSessionsById(id);
@@ -35,6 +36,7 @@ class CurrentSessionsController {
         equipments,
         createdAt,
         endAt,
+        updatedAt,
       };
 
       // Met à jour la session
@@ -71,8 +73,15 @@ class CurrentSessionsController {
 
   async post(req, res) {
     try {
-      const { id, client, reservations, equipments, createdAt, endAt } =
-        req.body;
+      const {
+        id,
+        client,
+        reservations,
+        equipments,
+        createdAt,
+        endAt,
+        updatedAt,
+      } = req.body;
 
       // Vérifie si l'identifiant de session est valide
       if (!id) {
@@ -86,9 +95,12 @@ class CurrentSessionsController {
         equipments,
         createdAt,
         endAt,
+        updatedAt,
       };
 
       // Crée la session
+
+      console.log("session:", session);
       await CurrentSessionsModel.createCurrentSession(session);
 
       res.json(session);
