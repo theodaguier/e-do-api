@@ -26,6 +26,8 @@ app.use("/api/get-equipments/byId/:id", EquipmentController.getById);
 app.use("/api/get-clients/all", ClientController.get);
 app.use("/api/get-clients/:id", ClientController.getById);
 app.use("/api/create-clients", ClientController.post);
+app.use("/api/update-current-session/:id", CurrentSessionsController.update);
+app.use("/api/update-equipment/:id", CurrentSessionsController.updateEquipment);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
@@ -35,8 +37,13 @@ app.listen(process.env.PORT, () => {
  *
  * TEST
  */
+
+// const uuid = require("uuid");
+
+// const newId = uuid.v4();
+
 // const requestData = {
-//   newId: "1",
+//   id: newId,
 //   client: {
 //     address: "123 Main St",
 //     name: "John Doe",
@@ -57,7 +64,7 @@ app.listen(process.env.PORT, () => {
 
 // const data = JSON.stringify(requestData);
 
-// axios.post("http://localhost:3000/api/create-current-sessions", data, {
+// axios.post("http://localhost:3000/api/create-current-sessions", requestData, {
 //   headers: {
 //     "Content-Type": "application/json",
 //   },
@@ -162,6 +169,45 @@ app.listen(process.env.PORT, () => {
 //   console.log(res.data);
 // });
 
-axios.get("http://localhost:3000/api/get-equipments/all").then((res) => {
-  console.log(res.data);
-});
+// axios.get("http://localhost:3000/api/get-equipments/all").then((res) => {
+//   console.log(res.data);
+// });
+
+// Test pour update une session en cours
+
+// const requestData = [{ equipment: "Equipment 1", quantity: 2 }];
+
+const testUpdate = {
+  client: {
+    address: "123 Main St",
+    name: "John Doe",
+    phone: "555-555-5555",
+    siren: "123456789",
+  },
+  reservations: [
+    { hours: 1, machine: "Machine 1" },
+    { hours: 2, machine: "Machine 2" },
+  ],
+  equipments: [{ equipment: "TEST 2", quantity: 110 }],
+  createdAt: "2022-01-01T00:00:00.000Z",
+};
+
+// const data = JSON.stringify(requestData);
+
+axios.post(
+  "http://localhost:3000/api/update-current-session/3f3f927d-16ad-4f67-b927-ea531bc9d116",
+  testUpdate,
+  {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+);
+
+// axios
+//   .get(
+//     "http://localhost:3000/api/get-current-sessions/1f1ea38e-58bd-4661-8863-0497cec62ae9"
+//   )
+//   .then((res) => {
+//     console.log(res.data);
+//   });

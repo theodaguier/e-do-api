@@ -1,5 +1,6 @@
 const { google } = require("googleapis");
 const { GoogleSheetsAuth } = require("../services");
+const { v4: uuidv4 } = require("uuid");
 
 class CurrentSessionsModel {
   constructor() {
@@ -131,6 +132,88 @@ class CurrentSessionsModel {
     const session = sessions.find((session) => session.id === id);
 
     return session;
+  }
+
+  async updateCurrentSession(id, sessionData) {
+    await this.googleSheetsAuth.authenticate();
+    const auth = this.googleSheetsAuth.getGoogleSheets();
+
+    const getRows = await auth.spreadsheets.values.get({
+      spreadsheetId: this.spreadsheetId,
+      range: "CurrentSessions!A2:H",
+    });
+
+    const rows = getRows.data.values;
+
+    // Trouve la ligne de la session à mettre à jour
+    const sessionRow = rows.find((row) => row[0] === id);
+
+    // Vérifie si la session existe
+    if (!sessionRow) {
+      throw new Error("Session does not exist");
+    }
+
+    // Met à jour la colonne des équipements, attention si la session a déjà des équipements de ne pas les supprimer !
+    sessionRow[6] = sessionData.equipments
+      .map((equipment) => `${equipment.equipment} (${equipment.quantity})`)
+      .join(", ");
+
+    // Récupère l'index de la ligne
+    const sessionRowIndex = rows.indexOf(sessionRow);
+
+    // Met à jour la ligne dans Google Sheets
+    const writeRow = await auth.spreadsheets.values.update({
+      spreadsheetId: this.spreadsheetId,
+      range: `CurrentSessions!A${sessionRowIndex + 2}:H${sessionRowIndex + 2}`,
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        values: [sessionRow],
+      },
+    });
+
+    return writeRow.data.values;
+  }
+
+  async updateSessionEquipment(id, sessionData) {
+    try {
+      await this.googleSheetsAuth.authenticate();
+      const auth = this.googleSheetsAuth.getGoogleSheets();
+
+      const getRows = await auth.spreadsheets.values.get({
+        spreadsheetId: this.spreadsheetId,
+        range: "CurrentSessions!A:H",
+      });
+
+      const rows = getRows.data.values;
+
+      // Trouve la ligne de la session à mettre à jour
+      const sessionRow = rows.filter((row) => row[0] === id)[0];
+
+      // Vérifie si la session existe
+      if (!sessionRow) {
+        throw new Error("Session does not exist");
+      }
+
+      // Mettez à jour la colonne des équipements
+      sessionRow[6] = sessionData.equipments
+        .map(
+          (equipment) => `${equipment.equipment} (${equipment.quantity || 0})`
+        )
+        .join(", ");
+
+      const writeRow = await auth.spreadsheets.values.update({
+        spreadsheetId: this.spreadsheetId,
+        range: `CurrentSessions!A${sessionRow}:H${sessionRow}`,
+        valueInputOption: "USER_ENTERED",
+        resource: {
+          values: [sessionRow],
+        },
+      });
+
+      return writeRow.data.values;
+    } catch (err) {
+      return { error: err.message };
+    }
   }
 
   async createCurrentSession(sessionData) {

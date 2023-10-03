@@ -11,6 +11,16 @@ router.get(
   CurrentSessionsController.getById.bind(CurrentSessionsController)
 );
 
+router.put(
+  "/:id",
+  CurrentSessionsController.update.bind(CurrentSessionsController)
+);
+
+router.put(
+  "/update-equipment/:id",
+  CurrentSessionsController.updateEquipment.bind(CurrentSessionsController)
+);
+
 router.post(
   "/",
   CurrentSessionsController.post.bind(CurrentSessionsController)
