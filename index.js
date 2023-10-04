@@ -23,6 +23,7 @@ app.use("/api/create-equipment", EquipmentController.post);
 app.use("/api/get-equipments/all", EquipmentController.get);
 app.use("/api/get-equipments/:cat", EquipmentController.getByCategory);
 app.use("/api/get-equipments/byId/:id", EquipmentController.getById);
+app.use("/api/get-only-equipments", EquipmentController.getOnlyEquipment);
 app.use("/api/get-clients/all", ClientController.get);
 app.use("/api/get-clients/:id", ClientController.getById);
 app.use("/api/create-clients", ClientController.post);
@@ -252,11 +253,9 @@ app.listen(process.env.PORT, () => {
 //   console.log(res.data);
 // });
 
-axios
-  .get("http://localhost:3000/api/get-equipments/consumables")
-  .then((res) => {
-    console.log(res.data);
-  });
+axios.get("http://localhost:3000/api/get-only-equipments/").then((res) => {
+  console.log(res.data);
+});
 
 // Test pour update une session en cours
 

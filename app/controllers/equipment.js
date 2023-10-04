@@ -36,6 +36,23 @@ class EquipmentController {
     res.json(equipment);
   }
 
+  async getOnlyEquipment(req, res) {
+    const equipments = await EquipmentModel.getEquipment();
+
+    const filteredEquipments = equipments.filter(
+      (equipment) =>
+        equipment.name !== null &&
+        equipment.cat !== null &&
+        equipment.price !== null &&
+        equipment.qty !== null &&
+        equipment.cat !== "consumables" &&
+        equipment.cat !== "Category" &&
+        equipment.id
+    );
+
+    res.json(filteredEquipments);
+  }
+
   async post(req, res) {
     const { id, name, cat, price, qty } = req.body;
 

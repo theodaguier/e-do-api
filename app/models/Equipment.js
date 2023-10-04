@@ -38,7 +38,11 @@ class EquipmentModel {
         return equipment;
       });
 
-      return filteredEquipments;
+      const equipmentsWithId = filteredEquipments.filter(
+        (equipment) => equipment.id !== null
+      );
+
+      return equipmentsWithId;
     } catch (err) {
       return { error: err.message };
     }
@@ -63,6 +67,16 @@ class EquipmentModel {
       );
 
       return equipmentsByCategory;
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
+  async getOnlyEquipment() {
+    try {
+      const equipments = await this.getEquipment();
+
+      return equipments;
     } catch (err) {
       return { error: err.message };
     }
