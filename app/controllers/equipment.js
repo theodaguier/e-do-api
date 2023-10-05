@@ -39,8 +39,10 @@ class EquipmentController {
   async getOnlyEquipment(req, res) {
     const equipments = await EquipmentModel.getEquipment();
 
+    // Filtrer les objets avec id et name null
     const filteredEquipments = equipments.filter(
       (equipment) =>
+        equipment.id !== null &&
         equipment.name !== null &&
         equipment.cat !== null &&
         equipment.price !== null &&
@@ -50,6 +52,7 @@ class EquipmentController {
         equipment.id
     );
 
+    // Envoyer la réponse au client
     res.json(filteredEquipments);
   }
 

@@ -253,42 +253,46 @@ app.listen(process.env.PORT, () => {
 //   console.log(res.data);
 // });
 
-axios.get("http://localhost:3000/api/get-only-equipments/").then((res) => {
-  console.log(res.data);
-});
+// axios.get("http://localhost:3000/api/get-only-equipments/").then((res) => {
+//   console.log(res.data);
+// });
 
 // Test pour update une session en cours
 
 // const requestData = [{ equipment: "Equipment 1", quantity: 2 }];
 
-// const testUpdate = {
-//   // client: {
-//   //   address: "123 Main St",
-//   //   name: "John Doe",
-//   //   phone: "555-555-5555",
-//   //   siren: "123456789",
-//   // },
-//   // reservations: [
-//   //   { hours: 1, machine: "Machine 1" },
-//   //   { hours: 2, machine: "Machine 2" },
-//   // ],
-//   equipments: [{ equipment: "TEST 900", quantity: 19 }],
-//   updatedAt: new Date(),
+const testUpdate = {
+  // client: {
+  //   address: "123 Main St",
+  //   name: "John Doe",
+  //   phone: "555-555-5555",
+  //   siren: "123456789",
+  // },
+  // reservations: [
+  //   { hours: 1, machine: "Machine 1" },
+  //   { hours: 2, machine: "Machine 2" },
+  // ],
+  equipments: [
+    { name: "TEST 900", quantity: 1 },
+    { name: "TEST", quantity: 0 },
+    { name: "TEST 902", quantity: 0 },
+  ],
+  updatedAt: new Date(),
 
-//   // createdAt: "2022-01-01T00:00:00.000Z",
-// };
+  // createdAt: "2022-01-01T00:00:00.000Z",
+};
 
-// // const data = JSON.stringify(requestData);
+// const data = JSON.stringify(requestData);
 
-// axios.post(
-//   "http://localhost:3000/api/update-current-session/3f3f927d-16ad-4f67-b927-ea531bc9d116",
-//   testUpdate,
-//   {
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   }
-// );
+axios.post(
+  "http://localhost:3000/api/update-current-session/85ac4749-fc9d-4812-a887-bd129da79648",
+  testUpdate,
+  {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+);
 
 // axios
 //   .get(

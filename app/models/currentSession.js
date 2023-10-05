@@ -167,14 +167,17 @@ class CurrentSessionsModel {
     const existingEquipments = sessionRow[6]
       ? sessionRow[6].split(", ").map((item) => {
           const [equipment, quantity] = item.split(" (");
-          return { equipment, quantity: parseInt(quantity) };
+          return {
+            name: equipment,
+            quantity: parseInt(quantity),
+          };
         })
       : [];
 
-    // Parcourez le tableau existant pour rechercher un équipement avec le même nom
+    // Parcourez le tableau existant
     for (const equipmentData of sessionData.equipments) {
       const existingEquipment = existingEquipments.find(
-        (item) => item.equipment === equipmentData.equipment
+        (item) => item.name === equipmentData.name
       );
 
       if (existingEquipment) {
@@ -188,7 +191,7 @@ class CurrentSessionsModel {
 
     // Mettez à jour la cellule des équipements avec la liste mise à jour
     sessionRow[6] = existingEquipments
-      .map((equipment) => `${equipment.equipment} (${equipment.quantity})`)
+      .map((equipment) => `${equipment.name} (${equipment.quantity})`)
       .join(", ");
 
     // Récupère l'index de la ligne

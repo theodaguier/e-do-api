@@ -1,4 +1,5 @@
-const { CurrentSessionsModel } = require("../models");
+const { name } = require("ejs");
+const { CurrentSessionsModel, EquipmentModel } = require("../models");
 
 class CurrentSessionsController {
   async get(req, res) {
@@ -19,8 +20,7 @@ class CurrentSessionsController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { client, reservations, equipments, createdAt, endAt, updatedAt } =
-        req.body;
+      const { client, reservations, equipments, createdAt, endAt } = req.body;
 
       // Vérifie si la session existe
       const session = await CurrentSessionsModel.getCurrentSessionsById(id);
@@ -36,7 +36,6 @@ class CurrentSessionsController {
         equipments,
         createdAt,
         endAt,
-        updatedAt,
       };
 
       // Met à jour la session
