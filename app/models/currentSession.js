@@ -33,49 +33,51 @@ class CurrentSessionsModel {
 
     const rows = getRows.data.values;
 
-    // Convertir les données de session en tableau d'objets
-    rows.map((row, index) => {
-      const session = {
-        id: row[0],
-        name: row[1],
-        address: row[2],
-        phone: row[3],
-        siren: row[4],
-        reservations: [],
-        equipments: row[5].split(" ").map((equipment) => ({
-          name: equipment,
-          quantity: 1,
-        })),
-        createdAt: row[6],
-        endAt: row[7],
-        updatedAt: row[8],
-      };
+    if (rows) {
+      rows.map((row, index) => {
+        const session = {
+          id: row[0],
+          name: row[1],
+          address: row[2],
+          phone: row[3],
+          siren: row[4],
+          reservations: [],
+          equipments: row[6].split(" ").map((equipment) => ({
+            name: equipment,
+            quantity: 1,
+          })),
+          createdAt: row[7],
+          endAt: row[8],
+          updatedAt: row[9],
+        };
 
-      // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
-      if (index > 0) {
-        session.reservations = session.reservations.concat(
-          sessions[index - 1].reservations
-        );
-      }
+        // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
+        if (index > 0) {
+          session.reservations = session.reservations.concat(
+            sessions[index - 1].reservations
+          );
+        }
 
-      // Parcourir le tableau `reservation` de la session
-      row[5].split(", ").forEach((reservation) => {
-        // Diviser la réservation en deux parties : les heures et la machine
-        const [hours, machine] = reservation.split(" ");
+        // Parcourir le tableau `reservation` de la session
+        row[5].split(", ").forEach((reservation) => {
+          // Diviser la réservation en deux parties : les heures et la machine
+          const [hours, machine] = reservation.split(" ");
 
-        // Convertir les heures en un entier
-        const hoursInt = parseInt(hours);
+          // Convertir les heures en un entier
+          const hoursInt = parseInt(hours);
 
-        // Ajouter l'objet de réservation au tableau `reservations` de la session
-        session.reservations.push({
-          hours: hoursInt,
-          machine: machine.trim(),
+          // Ajouter l'objet de réservation au tableau `reservations` de la session
+          session.reservations.push({
+            hours: hoursInt,
+            machine: machine.trim(),
+          });
         });
+
+        sessions.push(session);
+        index++;
+        return session;
       });
-      sessions.push(session);
-      index++;
-      return session;
-    });
+    }
 
     return sessions;
   }
@@ -102,13 +104,10 @@ class CurrentSessionsModel {
         phone: row[3],
         siren: row[4],
         reservations: [],
-        equipments: row[5].split(" ").map((equipment) => ({
-          name: equipment,
-          quantity: 1,
-        })),
-        createdAt: row[6],
-        endAt: row[7],
-        updatedAt: row[8],
+        equipments: [],
+        createdAt: row[7],
+        endAt: row[8],
+        updatedAt: row[9],
       };
 
       // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
@@ -132,6 +131,21 @@ class CurrentSessionsModel {
           machine: machine.trim(),
         });
       });
+
+      row[6].split(", ").forEach((equipment) => {
+        // Diviser l'équipement en deux parties : le nom et la quantité
+        const [name, quantity] = equipment.split(" (");
+
+        // Convertir la quantité en un entier
+        const quantityInt = parseInt(quantity);
+
+        // Ajouter l'objet d'équipement au tableau `equipments` de la session
+        session.equipments.push({
+          name,
+          quantity: quantityInt,
+        });
+      });
+
       sessions.push(session);
       index++;
       return session;

@@ -18,6 +18,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 app.use("/api/get-current-sessions", currentSession);
+app.use("/api/get-current-sessions/:id", CurrentSessionsController.getById);
 app.use("/api/create-current-sessions", CurrentSessionsController.post);
 app.use("/api/create-equipment", EquipmentController.post);
 app.use("/api/get-equipments/all", EquipmentController.get);
@@ -261,17 +262,20 @@ app.listen(process.env.PORT, () => {
 
 // const requestData = [{ equipment: "Equipment 1", quantity: 2 }];
 
+const uuid = require("uuid");
+
 const testUpdate = {
-  // client: {
-  //   address: "123 Main St",
-  //   name: "John Doe",
-  //   phone: "555-555-5555",
-  //   siren: "123456789",
-  // },
-  // reservations: [
-  //   { hours: 1, machine: "Machine 1" },
-  //   { hours: 2, machine: "Machine 2" },
-  // ],
+  id: uuid.v4(),
+  client: {
+    address: "123 Main St",
+    name: "John Doe",
+    phone: "555-555-5555",
+    siren: "123456789",
+  },
+  reservations: [
+    { hours: 1, machine: "Machine 1" },
+    { hours: 2, machine: "Machine 2" },
+  ],
   equipments: [
     { name: "TEST 900", quantity: 1 },
     { name: "TEST", quantity: 0 },
@@ -279,25 +283,21 @@ const testUpdate = {
   ],
   updatedAt: new Date(),
 
-  // createdAt: "2022-01-01T00:00:00.000Z",
+  createdAt: "2022-01-01T00:00:00.000Z",
 };
 
-// const data = JSON.stringify(requestData);
+const data = JSON.stringify(testUpdate);
 
-axios.post(
-  "http://localhost:3000/api/update-current-session/85ac4749-fc9d-4812-a887-bd129da79648",
-  testUpdate,
-  {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }
-);
+// axios.post("http://localhost:3000/api/create-current-sessions", data, {
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+// });
 
-// axios
-//   .get(
-//     "http://localhost:3000/api/get-current-sessions/1f1ea38e-58bd-4661-8863-0497cec62ae9"
-//   )
-//   .then((res) => {
-//     console.log(res.data);
-//   });
+axios
+  .get(
+    "http://localhost:3000/api/get-current-sessions/b9c94b8c-6265-4aea-aae9-1cc8d4478434"
+  )
+  .then((res) => {
+    console.log(res.data);
+  });
