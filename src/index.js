@@ -1,15 +1,15 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const { google } = require("googleapis");
-const axios = require("axios");
+// const axios = require("axios");
 
-const { currentSession, equipment } = require("./app/routes");
-const { CurrentSessionsModel } = require("./app/models");
+const { currentSession, equipment } = require("./routes");
+const { CurrentSessionsModel } = require("./models");
 const {
   CurrentSessionsController,
   EquipmentController,
   ClientController,
-} = require("./app/controllers/");
+} = require("./controllers/");
 
 const app = express();
 dotenv.config();
@@ -21,8 +21,13 @@ app.use("/api/get-current-sessions", currentSession);
 app.use("/api/get-current-sessions/:id", CurrentSessionsController.getById);
 app.use("/api/create-current-sessions", CurrentSessionsController.post);
 app.use("/api/create-equipment", EquipmentController.post);
+app.use("/api/stop-session/:id", CurrentSessionsController.stopSession);
 app.use("/api/get-equipments/all", EquipmentController.get);
 app.use("/api/get-equipments/:cat", EquipmentController.getByCategory);
+app.use(
+  "/api/update-equipments/:cat",
+  EquipmentController.updateEquipmentByCategory
+);
 app.use("/api/get-equipments/byId/:id", EquipmentController.getById);
 app.use("/api/get-only-equipments", EquipmentController.getOnlyEquipment);
 app.use("/api/get-clients/all", ClientController.get);
@@ -30,6 +35,7 @@ app.use("/api/get-clients/:id", ClientController.getById);
 app.use("/api/create-clients", ClientController.post);
 app.use("/api/update-current-session/:id", CurrentSessionsController.update);
 app.use("/api/update-equipment/:id", CurrentSessionsController.updateEquipment);
+app.use("/api/clients", ClientController.get);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
@@ -40,12 +46,8 @@ app.listen(process.env.PORT, () => {
  * TEST
  */
 
-// const uuid = require("uuid");
-
-// const newId = uuid.v4();
-
 // const requestData = {
-//   id: newId,
+//   id: "10101092392002",
 //   client: {
 //     address: "123 Main St",
 //     name: "John Doe",
@@ -65,7 +67,7 @@ app.listen(process.env.PORT, () => {
 //   updatedAt: new Date(),
 // };
 
-// const data = JSON.stringify(requestData);
+// // const data = JSON.stringify(requestData);
 
 // axios.post("http://localhost:3000/api/create-current-sessions", requestData, {
 //   headers: {
@@ -262,42 +264,48 @@ app.listen(process.env.PORT, () => {
 
 // const requestData = [{ equipment: "Equipment 1", quantity: 2 }];
 
-const uuid = require("uuid");
+// const uuid = require("uuid");
 
-const testUpdate = {
-  id: uuid.v4(),
-  client: {
-    address: "123 Main St",
-    name: "John Doe",
-    phone: "555-555-5555",
-    siren: "123456789",
-  },
-  reservations: [
-    { hours: 1, machine: "Machine 1" },
-    { hours: 2, machine: "Machine 2" },
-  ],
-  equipments: [
-    { name: "TEST 900", quantity: 1 },
-    { name: "TEST", quantity: 0 },
-    { name: "TEST 902", quantity: 0 },
-  ],
-  updatedAt: new Date(),
+// const testUpdate = {
+//   client: {
+//     address: "123 Main St",
+//     name: "John Doe",
+//     phone: "555-555-5555",
+//     siren: "123456789",
+//   },
+//   reservations: [
+//     { hours: 1, machine: "Machine 1" },
+//     { hours: 2, machine: "Machine 2" },
+//   ],
+//   equipments: [
+//     { name: "TEST 900", quantity: 1 },
+//     { name: "TEST", quantity: 0 },
+//     { name: "TEST 902", quantity: 0 },
+//   ],
+// updatedAt: new Date(),
+// createdAt: "2022-01-01T00:00:00.000Z",
+// };
 
-  createdAt: "2022-01-01T00:00:00.000Z",
-};
+// const data = JSON.stringify(testUpdate);
 
-const data = JSON.stringify(testUpdate);
-
-// axios.post("http://localhost:3000/api/create-current-sessions", data, {
+// axios.post("http://localhost:3000/api/update-current-session/1", data, {
 //   headers: {
 //     "Content-Type": "application/json",
 //   },
 // });
 
-axios
-  .get(
-    "http://localhost:3000/api/get-current-sessions/b9c94b8c-6265-4aea-aae9-1cc8d4478434"
-  )
-  .then((res) => {
-    console.log(res.data);
-  });
+// axios
+//   .get(
+//     "http://localhost:3000/api/get-current-sessions/b9c94b8c-6265-4aea-aae9-1cc8d4478434"
+//   )
+//   .then((res) => {
+//     console.log(res.data);
+//   });
+
+// axios.get("http://localhost:3000/api/get-current-sessions").then((res) => {
+//   console.log(res.data);
+// });
+
+// axios.get("http://localhost:3000/api/get-equipments/cameras").then((res) => {
+//   console.log(res.data);
+// });

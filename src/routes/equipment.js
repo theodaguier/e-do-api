@@ -18,4 +18,6 @@ router.get(
 
 router.post("/", EquipmentController.post.bind(EquipmentController));
 
+// router.post("/:cat", EquipmentController.postbyCat.bind(EquipmentController));
+
 module.exports = router;

@@ -71,6 +71,17 @@ class EquipmentController {
 
     res.json(newEquipment);
   }
+  async updateEquipmentByCategory(req, res) {
+    const { cat } = req.params;
+    const updatedEquipments = req.body;
+
+    const updatedEquipment = await EquipmentModel.updateEquipmentByCategory(
+      updatedEquipments,
+      cat
+    );
+
+    res.json(updatedEquipment);
+  }
 }
 
 module.exports = new EquipmentController();

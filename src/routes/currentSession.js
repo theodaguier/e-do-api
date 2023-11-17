@@ -16,6 +16,11 @@ router.put(
   CurrentSessionsController.update.bind(CurrentSessionsController)
 );
 
+router.post(
+  "/:id",
+  CurrentSessionsController.update.bind(CurrentSessionsController)
+);
+
 router.put(
   "/update-equipment/:id",
   CurrentSessionsController.updateEquipment.bind(CurrentSessionsController)
@@ -24,6 +29,11 @@ router.put(
 router.post(
   "/",
   CurrentSessionsController.post.bind(CurrentSessionsController)
+);
+
+router.post(
+  "/:id",
+  CurrentSessionsController.stopSession.bind(CurrentSessionsController)
 );
 
 module.exports = router;

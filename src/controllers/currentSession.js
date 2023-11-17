@@ -20,7 +20,15 @@ class CurrentSessionsController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { client, reservations, equipments, createdAt, endAt } = req.body;
+      const {
+        client,
+        reservations,
+        equipments,
+        notes,
+        status,
+        createdAt,
+        endAt,
+      } = req.body;
 
       // Vérifie si la session existe
       const session = await CurrentSessionsModel.getCurrentSessionsById(id);
@@ -34,6 +42,8 @@ class CurrentSessionsController {
         client,
         reservations,
         equipments,
+        notes,
+        status,
         createdAt,
         endAt,
       };
@@ -77,6 +87,8 @@ class CurrentSessionsController {
         client,
         reservations,
         equipments,
+        notes,
+        status,
         createdAt,
         endAt,
         updatedAt,
@@ -101,6 +113,23 @@ class CurrentSessionsController {
 
       console.log("session:", session);
       await CurrentSessionsModel.createCurrentSession(session);
+
+      res.json(session);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  async stopSession(req, res) {
+    try {
+      const { id } = req.params;
+
+      const session = await CurrentSessionsModel.getCurrentSessionsById(id);
+      if (!session) {
+        throw new Error("Session does not exist");
+      }
+
+      await CurrentSessionsModel.stopSession(id);
 
       res.json(session);
     } catch (err) {

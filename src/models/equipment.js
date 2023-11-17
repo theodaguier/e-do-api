@@ -1,5 +1,6 @@
 const { google } = require("googleapis");
 const { GoogleSheetsAuth } = require("../services");
+const { all } = require("axios");
 
 class EquipmentModel {
   constructor(id, name, cat, price, qty) {
@@ -122,6 +123,64 @@ class EquipmentModel {
       });
 
       return newEquipment;
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+  async updateEquipmentByCategory(updatedEquipments, cat) {
+    try {
+      // Récupère tous les équipements
+      const allEquipments = await this.getEquipment();
+
+      // Filtrer les équipements de la catégorie spécifiée
+      const equipmentsToUpdate = allEquipments.filter(
+        (equipment) => equipment.cat === cat
+      );
+
+      // Authentification Google Sheets
+      await this.googleSheetsAuth.authenticate();
+      const auth = this.googleSheetsAuth.getGoogleSheets();
+
+      // Parcourir les équipements à mettre à jour
+      for (const updatedEquipment of updatedEquipments) {
+        // Trouver l'index de l'équipement dans la liste complète
+        const indexToUpdate = allEquipments.findIndex(
+          (equipment) => equipment.id === updatedEquipment.id
+        );
+
+        // Mettre à jour les propriétés modifiables
+        if (indexToUpdate !== -1) {
+          allEquipments[indexToUpdate].id = updatedEquipment.id;
+          allEquipments[indexToUpdate].name = updatedEquipment.name;
+          allEquipments[indexToUpdate].price = updatedEquipment.price;
+          allEquipments[indexToUpdate].qty = updatedEquipment.qty;
+
+          // Mettre à jour les valeurs dans la feuille de calcul
+          const range = `Equipments!A${indexToUpdate + 3}:E${
+            indexToUpdate + 3
+          }`;
+          const values = [
+            [
+              allEquipments[indexToUpdate].id,
+              allEquipments[indexToUpdate].name,
+              allEquipments[indexToUpdate].cat,
+              allEquipments[indexToUpdate].price,
+              allEquipments[indexToUpdate].qty,
+            ],
+          ];
+          const resource = { values };
+          const valueInputOption = "USER_ENTERED";
+
+          await auth.spreadsheets.values.update({
+            spreadsheetId: this.spreadsheetId,
+            range,
+            resource,
+            valueInputOption,
+          });
+        }
+      }
+
+      return allEquipments;
     } catch (err) {
       return { error: err.message };
     }
