@@ -13,16 +13,17 @@ class ColoramaController {
     res.json(colorama);
   }
 
-  // async getById(req, res) {
-  //   const { id } = req.params;
-  //   const equipment = await EquipmentModel.getEquipmentById(id);
+  async getById(req, res) {
+    const { id } = req.params;
 
-  //   if (!equipment) {
-  //     return res.status(404).send("Equipment not found");
-  //   }
+    const colorama = await ColoramaModel.getColoramaById(id);
 
-  //   res.json(equipment);
-  // }
+    if (!colorama) {
+      return res.status(404).send("colorama not found");
+    }
+
+    res.json(colorama);
+  }
 
   async post(req, res) {
     const { id, name, color, qty } = req.body;
@@ -34,9 +35,24 @@ class ColoramaController {
       qty,
     };
 
-    const newColorama = await ColoramaModel.createColoramas(colorama);
+    const newColorama = await ColoramaModel.updateColoramas(colorama);
 
     res.json(newColorama);
+  }
+
+  async updateColoramas(req, res) {
+    const colorama = req.body;
+
+    // const colorama = {
+    //   id,
+    //   name,
+    //   color,
+    //   qty,
+    // };
+
+    const updatedColorama = await ColoramaModel.updateColoramas(colorama);
+
+    res.json(updatedColorama);
   }
 }
 

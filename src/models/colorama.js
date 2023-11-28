@@ -47,49 +47,30 @@ class ColoramaModel {
     }
   }
 
-  // async getEquipmentById(id) {
-  //   try {
-  //     const equipments = await this.getEquipment();
-  //     const equipment = equipments.find((equipment) => equipment.id === id);
+  async getColoramaById(id) {
+    try {
+      const coloramas = await this.getColoramas();
+      const colorama = coloramas.find((colorama) => colorama.id === id);
 
-  //     return equipment;
-  //   } catch (err) {
-  //     return { error: err.message };
-  //   }
-  // }
-
-  // async getEquipmentByCategory(cat) {
-  //   try {
-  //     const equipments = await this.getEquipment();
-  //     const equipmentsByCategory = equipments.filter(
-  //       (equipment) => equipment.cat === cat
-  //     );
-
-  //     return equipmentsByCategory;
-  //   } catch (err) {
-  //     return { error: err.message };
-  //   }
-  // }
+      return colorama;
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
 
   async createColoramas(colorama) {
     try {
       const coloramas = await this.getColoramas();
-      const newId = colorama.length + 1;
 
-      const newColoramas = {
-        id: newId,
+      const newColorama = {
+        id: colorama.id,
         name: colorama.name,
-        color: colorama.cat,
+        color: colorama.color,
         qty: colorama.qty,
       };
 
       await this.googleSheetsAuth.authenticate();
       const auth = this.googleSheetsAuth.getGoogleSheets();
-
-      // Recherche la première ligne vide
-      // const firstEmptyRow = colorama.findIndex(
-      //   (colorama) => colorama.name === ""
-      // );
 
       // Ajoute une nouvelle ligne à la fin de la feuille de calcul
       const appendRow = await auth.spreadsheets.values.append({
@@ -99,17 +80,82 @@ class ColoramaModel {
         resource: {
           values: [
             [
-              newColoramas.id,
-              newColoramas.name,
-              newColoramas.color,
-              newColoramas.qty,
+              newColorama.id,
+              newColorama.name,
+              newColorama.color,
+              newColorama.qty,
             ],
           ],
         },
       });
 
-      return newColoramas;
+      return newColorama;
     } catch (err) {
+      return { error: err.message };
+    }
+  }
+
+  async updateColoramas(colorama) {
+    console.log("colorama:", colorama);
+
+    try {
+      const updatedColoramas = colorama.map((currentColorama) => {
+        if (currentColorama.id)
+          // Mettre à jour seulement les propriétés nécessaires
+          return {
+            id: currentColorama.id,
+            name: currentColorama.name,
+            color: currentColorama.color,
+            qty: currentColorama.qty,
+          };
+      });
+
+      console.log("updatedColoramas:", updatedColoramas);
+
+      await this.googleSheetsAuth.authenticate();
+      const auth = this.googleSheetsAuth.getGoogleSheets();
+
+      for (const updatedColorama of updatedColoramas) {
+        // Trouver l'index de l'équipement dans la liste complète
+        const indexToUpdate = colorama.findIndex(
+          (col) => col.id === updatedColorama.id
+        );
+
+        // Mettre à jour les propriétés modifiables
+        if (indexToUpdate !== -1) {
+          colorama[indexToUpdate].id = updatedColorama.id;
+          colorama[indexToUpdate].name = updatedColorama.name;
+          colorama[indexToUpdate].color = updatedColorama.color;
+          colorama[indexToUpdate].qty = updatedColorama.qty;
+
+          // Mettre à jour les valeurs dans la feuille de calcul
+          const range = `Coloramas!A${indexToUpdate + 2}:E${indexToUpdate + 2}`;
+          const values = [
+            [
+              colorama[indexToUpdate].id,
+              colorama[indexToUpdate].name,
+              colorama[indexToUpdate].color,
+              colorama[indexToUpdate].qty,
+            ],
+          ];
+          const resource = { values };
+          const valueInputOption = "USER_ENTERED";
+
+          await auth.spreadsheets.values.update({
+            spreadsheetId: this.spreadsheetId,
+            range,
+            resource,
+            valueInputOption,
+          });
+        }
+      }
+
+      // Afficher les lignes mises à jour dans la console
+      console.log("Updated rows:", updatedColoramas);
+
+      return updatedColoramas;
+    } catch (err) {
+      console.error("Error updating coloramas:", err);
       return { error: err.message };
     }
   }
