@@ -1,7 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const { google } = require("googleapis");
-// const axios = require("axios");
+const axios = require("axios");
 
 const { currentSession, equipment } = require("./routes");
 const { CurrentSessionsModel } = require("./models");
@@ -9,6 +9,7 @@ const {
   CurrentSessionsController,
   EquipmentController,
   ClientController,
+  ColoramaController,
 } = require("./controllers/");
 
 const app = express();
@@ -36,6 +37,8 @@ app.use("/api/create-clients", ClientController.post);
 app.use("/api/update-current-session/:id", CurrentSessionsController.update);
 app.use("/api/update-equipment/:id", CurrentSessionsController.updateEquipment);
 app.use("/api/clients", ClientController.get);
+app.use("/api/coloramas", ColoramaController.get);
+app.use("/api/create-colorama", ColoramaController.post);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
@@ -127,7 +130,7 @@ app.listen(process.env.PORT, () => {
 // async function getEquipmentFromFirebase() {
 //   try {
 //     // Reference the "equipments" collection correctly using the db instance
-//     const equipmentsCollection = collection(db, "consumables");
+//     const equipmentsCollection = collection(db, "coloramas");
 
 //     const equipmentsSnapshot = await getDocs(equipmentsCollection);
 
@@ -144,7 +147,9 @@ app.listen(process.env.PORT, () => {
 
 // getEquipmentFromFirebase()
 //   .then((equipments) => {
-//     console.log("equipments:", equipments);
+//     const data = JSON.stringify(equipments);
+
+//     // console.log("equipments:", equipments);
 //   })
 
 //   .catch((error) => {
