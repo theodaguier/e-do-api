@@ -1,6 +1,5 @@
 const { google } = require("googleapis");
 const { GoogleSheetsAuth } = require("../services");
-const { all } = require("axios");
 
 class ColoramaModel {
   constructor(id, name, color, qty) {
@@ -21,7 +20,7 @@ class ColoramaModel {
 
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
-        range: "Coloramas!A2:E",
+        range: "Coloramas!A2:D",
       });
 
       const rows = getRows.data.values;
@@ -62,100 +61,131 @@ class ColoramaModel {
     try {
       const coloramas = await this.getColoramas();
 
-      const newColorama = {
-        id: colorama.id,
-        name: colorama.name,
-        color: colorama.color,
-        qty: colorama.qty,
-      };
+      // Vérifier si le colorama existe déjà dans la liste
+      const existingColorama = coloramas.find((c) => c.id === colorama.id);
 
-      await this.googleSheetsAuth.authenticate();
-      const auth = this.googleSheetsAuth.getGoogleSheets();
+      if (existingColorama) {
+        // Le colorama existe déjà, mettez à jour la quantité par exemple
+        existingColorama.qty += colorama.qty;
 
-      // Ajoute une nouvelle ligne à la fin de la feuille de calcul
-      const appendRow = await auth.spreadsheets.values.append({
-        spreadsheetId: this.spreadsheetId,
-        range: `Coloramas!A2:E`,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-          values: [
-            [
-              newColorama.id,
-              newColorama.name,
-              newColorama.color,
-              newColorama.qty,
-            ],
+        await this.googleSheetsAuth.authenticate();
+        const auth = this.googleSheetsAuth.getGoogleSheets();
+
+        // Mettre à jour la valeur dans la feuille de calcul
+        const range = `Coloramas!A${existingColorama.id + 1}:E${
+          existingColorama.id + 1
+        }`;
+        const values = [
+          [
+            existingColorama.id,
+            existingColorama.name,
+            existingColorama.color,
+            existingColorama.qty,
           ],
-        },
-      });
+        ];
+        const resource = { values };
+        const valueInputOption = "USER_ENTERED";
 
-      return newColorama;
+        await auth.spreadsheets.values.update({
+          spreadsheetId: this.spreadsheetId,
+          range,
+          resource,
+          valueInputOption,
+        });
+
+        return existingColorama;
+      } else {
+        // Le colorama n'existe pas encore, ajoutez-le
+        const newColorama = {
+          id: colorama.id,
+          name: colorama.name,
+          color: colorama.color,
+          qty: colorama.qty,
+        };
+
+        await this.googleSheetsAuth.authenticate();
+        const auth = this.googleSheetsAuth.getGoogleSheets();
+
+        // Ajoute une nouvelle ligne à la fin de la feuille de calcul
+        const appendRow = await auth.spreadsheets.values.append({
+          spreadsheetId: this.spreadsheetId,
+          range: `Coloramas!A2:D`,
+          valueInputOption: "USER_ENTERED",
+          resource: {
+            values: [
+              [
+                newColorama.id,
+                newColorama.name,
+                newColorama.color,
+                newColorama.qty,
+              ],
+            ],
+          },
+        });
+
+        return newColorama;
+      }
     } catch (err) {
       return { error: err.message };
     }
   }
 
-  async updateColoramas(colorama) {
-    console.log("colorama:", colorama);
-
+  async updateColoramas(coloramasToUpdate) {
     try {
-      const updatedColoramas = colorama.map((currentColorama) => {
-        if (currentColorama.id)
-          // Mettre à jour seulement les propriétés nécessaires
-          return {
-            id: currentColorama.id,
-            name: currentColorama.name,
-            color: currentColorama.color,
-            qty: currentColorama.qty,
-          };
-      });
-
-      console.log("updatedColoramas:", updatedColoramas);
+      if (!coloramasToUpdate || !Array.isArray(coloramasToUpdate)) {
+        return { error: "Invalid colorama objects" };
+      }
 
       await this.googleSheetsAuth.authenticate();
       const auth = this.googleSheetsAuth.getGoogleSheets();
 
-      for (const updatedColorama of updatedColoramas) {
-        // Trouver l'index de l'équipement dans la liste complète
-        const indexToUpdate = colorama.findIndex(
-          (col) => col.id === updatedColorama.id
-        );
+      const range = `Coloramas!A:D`;
+      const getRows = await auth.spreadsheets.values.get({
+        spreadsheetId: this.spreadsheetId,
+        range,
+      });
 
-        // Mettre à jour les propriétés modifiables
-        if (indexToUpdate !== -1) {
-          colorama[indexToUpdate].id = updatedColorama.id;
-          colorama[indexToUpdate].name = updatedColorama.name;
-          colorama[indexToUpdate].color = updatedColorama.color;
-          colorama[indexToUpdate].qty = updatedColorama.qty;
+      const rows = getRows.data.values;
 
-          // Mettre à jour les valeurs dans la feuille de calcul
-          const range = `Coloramas!A${indexToUpdate + 2}:E${indexToUpdate + 2}`;
-          const values = [
-            [
-              colorama[indexToUpdate].id,
-              colorama[indexToUpdate].name,
-              colorama[indexToUpdate].color,
-              colorama[indexToUpdate].qty,
-            ],
-          ];
-          const resource = { values };
-          const valueInputOption = "USER_ENTERED";
-
-          await auth.spreadsheets.values.update({
-            spreadsheetId: this.spreadsheetId,
-            range,
-            resource,
-            valueInputOption,
-          });
+      // Mettre à jour chaque colorama du tableau
+      for (const colorama of coloramasToUpdate) {
+        if (!colorama || colorama.id === undefined) {
+          return { error: "Invalid colorama object" };
         }
+
+        // Recherche de l'index de la ligne à mettre à jour
+        let indexToUpdate = -1;
+
+        for (let i = 0; i < rows.length; i++) {
+          if (rows[i][0] === colorama.id.toString()) {
+            indexToUpdate = i;
+            break;
+          }
+        }
+
+        if (indexToUpdate === -1) {
+          return { error: `Colorama with ID ${colorama.id} not found` };
+        }
+
+        // Construire la plage correcte en utilisant les lettres des colonnes
+        const updateRange = `Coloramas!B${indexToUpdate + 1}:D${
+          indexToUpdate + 1
+        }`;
+        const values = [[colorama.name, colorama.color, colorama.qty]];
+        const resource = { values };
+        const valueInputOption = "USER_ENTERED";
+
+        // Utiliser la méthode update pour mettre à jour la plage correcte
+        await auth.spreadsheets.values.update({
+          spreadsheetId: this.spreadsheetId,
+          range: updateRange,
+          resource,
+          valueInputOption,
+        });
       }
 
-      // Afficher les lignes mises à jour dans la console
-      console.log("Updated rows:", updatedColoramas);
-
-      return updatedColoramas;
+      return coloramasToUpdate;
     } catch (err) {
-      console.error("Error updating coloramas:", err);
       return { error: err.message };
     }
   }
