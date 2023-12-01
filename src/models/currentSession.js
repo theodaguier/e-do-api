@@ -60,11 +60,11 @@ class CurrentSessionsModel {
         };
 
         // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
-        if (index > 0) {
-          session.reservations = session.reservations.concat(
-            sessions[index - 1].reservations
-          );
-        }
+        // if (index > 0) {
+        //   session.reservations = session.reservations.concat(
+        //     sessions[index - 1].reservations
+        //   );
+        // }
 
         // Parcourir le tableau `reservation` de la session
         row[5].split(", ").forEach((reservation) => {
@@ -82,7 +82,7 @@ class CurrentSessionsModel {
         });
 
         sessions.push(session);
-        index++;
+
         return session;
       });
     }

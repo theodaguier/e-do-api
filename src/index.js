@@ -39,7 +39,7 @@ app.use("/api/update-equipment/:id", CurrentSessionsController.updateEquipment);
 app.use("/api/clients", ClientController.get);
 app.use("/api/coloramas", ColoramaController.get);
 app.use("/api/create-colorama", ColoramaController.post);
-+app.use("/api/update-colorama/", ColoramaController.updateColoramas);
+app.use("/api/update-colorama/", ColoramaController.updateColoramas);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
