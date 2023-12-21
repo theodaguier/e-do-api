@@ -1,10 +1,10 @@
-const { ClientModel } = require("../models");
+const ClientModel = require("../models/");
 
 class ClientController {
   async get(req, res) {
     const { id, name, address, brand, siren, phone, email } = req.query;
 
-    const client = await ClientModel.getClients();
+    const clients = await ClientModel.getClients();
 
     if (!client) {
       return res.status(404).send("Client not found");
