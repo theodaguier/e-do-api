@@ -1,6 +1,10 @@
-const { google } = require("googleapis");
+import { google, sheets_v4 } from "googleapis";
+import { GoogleAuth, OAuth2Client } from "google-auth-library";
 
 class GoogleSheetsAuth {
+  private auth: OAuth2Client | null;
+  private googleSheets: sheets_v4.Sheets | null;
+
   constructor() {
     this.auth = null;
     this.googleSheets = null;
@@ -9,12 +13,12 @@ class GoogleSheetsAuth {
   async authenticate() {
     try {
       if (!this.auth) {
-        this.auth = new google.auth.GoogleAuth({
+        const googleAuth = new google.auth.GoogleAuth({
           keyFile: "credentials.json",
           scopes: "https://www.googleapis.com/auth/spreadsheets",
         });
 
-        this.auth = await this.auth.getClient();
+        this.auth = (await googleAuth.getClient()) as OAuth2Client;
       }
 
       if (!this.googleSheets) {
@@ -34,4 +38,4 @@ class GoogleSheetsAuth {
   }
 }
 
-module.exports = GoogleSheetsAuth;
+export default GoogleSheetsAuth;

@@ -1,23 +1,22 @@
-const { name } = require("ejs");
-const { CurrentSessionsModel, EquipmentModel } = require("../models");
+//@ts-nocheck
+import CurrentSessionsModel from "../models/current-session.model";
+import { Request, Response } from "express";
 
 class CurrentSessionsController {
-  async get(req, res) {
-    const currentSessions = await CurrentSessionsModel.getCurrentSessions();
+  async get(req: Request, res: Response) {
+    const currentSessions = await CurrentSessionsModel.get();
     res.json(currentSessions);
   }
 
-  async getById(req, res) {
+  async getById(req: Request, res: Response) {
     const { id } = req.params;
 
-    const currentSession = await CurrentSessionsModel.getCurrentSessionsById(
-      id
-    );
+    const currentSession = await CurrentSessionsModel.getById(id);
 
     res.json(currentSession);
   }
 
-  async update(req, res) {
+  async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const {
@@ -31,8 +30,8 @@ class CurrentSessionsController {
       } = req.body;
 
       // Vérifie si la session existe
-      const session = await CurrentSessionsModel.getCurrentSessionsById(id);
-      if (!session) {
+      const session = await CurrentSessionsModel.getById(id);
+      if (!req.body) {
         throw new Error("Session does not exist");
       }
 
@@ -49,38 +48,41 @@ class CurrentSessionsController {
       };
 
       // Met à jour la session
-      await CurrentSessionsModel.updateCurrentSession(id, sessionData);
+      await CurrentSessionsModel.update(id, sessionData);
 
       res.json(session);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: (err as Error).message });
     }
   }
 
-  async updateEquipment(req, res) {
+  async updateEquipment(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const { equipment } = req.body;
 
       // Vérifie si la session existe
-      const session = await CurrentSessionsModel.getCurrentSessionsById(id);
-      if (!session) {
+      const session = await CurrentSessionsModel.getById(id);
+      if (!req.body) {
         throw new Error("Session does not exist");
       }
 
-      // Mettez à jour la session avec les données d'équipement
-      session.equipments.push(equipment);
+      // Crée un objet de session
+      const sessionData = {
+        id,
+        equipment,
+      };
 
       // Met à jour la session
-      await CurrentSessionsModel.updateSessionEquipment(id, session);
+      await CurrentSessionsModel.update(id, sessionData as any);
 
       res.json(session);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: (err as Error).message });
     }
   }
 
-  async post(req, res) {
+  async post(req: Request, res: Response) {
     try {
       const {
         id,
@@ -112,30 +114,30 @@ class CurrentSessionsController {
       // Crée la session
 
       console.log("session:", session);
-      await CurrentSessionsModel.createCurrentSession(session);
+      await CurrentSessionsModel.create(session);
 
       res.json(session);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: (err as Error).message });
     }
   }
 
-  async stopSession(req, res) {
+  async stop(req: Request, res: Response) {
     try {
       const { id } = req.params;
 
-      const session = await CurrentSessionsModel.getCurrentSessionsById(id);
-      if (!session) {
+      const session = await CurrentSessionsModel.getById(id);
+      if (!req.body) {
         throw new Error("Session does not exist");
       }
 
-      await CurrentSessionsModel.stopSession(id);
+      await CurrentSessionsModel.stop(id);
 
       res.json(session);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      return { error: (err as Error).message };
     }
   }
 }
 
-module.exports = new CurrentSessionsController();
+export default new CurrentSessionsController();

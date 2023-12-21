@@ -1,62 +1,71 @@
-const { EquipmentModel } = require("../models");
+import EquipmentModel from "../models/equipment.model";
+import { Request, Response } from "express";
 
 class EquipmentController {
-  async get(req, res) {
+  async get(req: Request, res: Response) {
     const { id, name, cat, price, qty } = req.query;
 
     const equipment = await EquipmentModel.getEquipment();
 
-    if (!equipment) {
+    if (!req.query) {
       return res.status(404).send("Equipment not found");
     }
 
     res.json(equipment);
   }
 
-  async getById(req, res) {
+  async getById(req: Request, res: Response) {
     const { id } = req.params;
     const equipment = await EquipmentModel.getEquipmentById(id);
 
-    if (!equipment) {
+    if (!req.query) {
       return res.status(404).send("Equipment not found");
     }
 
     res.json(equipment);
   }
 
-  async getByCategory(req, res) {
+  async getByCategory(req: Request, res: Response) {
     const { cat } = req.params;
     console.log(cat);
     const equipment = await EquipmentModel.getEquipmentByCategory(cat);
 
-    if (!equipment) {
+    if (!req.query) {
       return res.status(404).send("Equipment not found");
     }
 
     res.json(equipment);
   }
 
-  async getOnlyEquipment(req, res) {
+  async getOnlyEquipment(req: Request, res: Response) {
     const equipments = await EquipmentModel.getEquipment();
 
     // Filtrer les objets avec id et name null
-    const filteredEquipments = equipments.filter(
-      (equipment) =>
-        equipment.id !== null &&
-        equipment.name !== null &&
-        equipment.cat !== null &&
-        equipment.price !== null &&
-        equipment.qty !== null &&
-        equipment.cat !== "consumables" &&
-        equipment.cat !== "Category" &&
-        equipment.id
-    );
+    const filteredEquipments = Array.isArray(equipments)
+      ? equipments.filter(
+          (equipment: {
+            id: null;
+            name: null;
+            cat: string | null;
+            price: null;
+            qty: null;
+          }) =>
+            equipment.id !== null &&
+            equipment.name !== null &&
+            equipment.cat !== null &&
+            equipment.price !== null &&
+            equipment.qty !== null &&
+            equipment.cat !== "consumables" &&
+            equipment.cat !== "Category" &&
+            equipment.id
+        )
+      : [];
 
     // Envoyer la réponse au client
     res.json(filteredEquipments);
   }
 
-  async post(req, res) {
+  async post(req: Request, res: Response) {
     const { id, name, cat, price, qty } = req.body;
 
     const equipment = {
@@ -71,7 +80,8 @@ class EquipmentController {
 
     res.json(newEquipment);
   }
-  async updateEquipmentByCategory(req, res) {
+
+  async updateEquipment(req: Request, res: Response) {
     const { cat } = req.params;
     const updatedEquipments = req.body;
 
@@ -84,4 +94,4 @@ class EquipmentController {
   }
 }
 
-module.exports = new EquipmentController();
+export default new EquipmentController();

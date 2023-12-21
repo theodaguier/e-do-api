@@ -1,9 +1,36 @@
-const { google } = require("googleapis");
-const { GoogleSheetsAuth } = require("../services");
-const { all } = require("axios");
+import GoogleSheetsAuth from "../services/auth";
+import { EquipmentStock } from "../types/def.type";
 
 class EquipmentModel {
-  constructor(id, name, cat, price, qty) {
+  static getEquipmentById(id: string) {
+    throw new Error("Method not implemented.");
+  }
+  static createEquipment(equipment: {
+    id: any;
+    name: any;
+    cat: any;
+    price: any;
+    qty: any;
+  }) {
+    throw new Error("Method not implemented.");
+  }
+  static updateEquipmentByCategory(updatedEquipments: any, cat: string) {
+    throw new Error("Method not implemented.");
+  }
+  static getEquipmentByCategory(cat: string) {
+    throw new Error("Method not implemented.");
+  }
+  static getEquipment() {
+    throw new Error("Method not implemented.");
+  }
+  googleSheetsAuth: GoogleSheetsAuth;
+  spreadsheetId: string;
+  id: any;
+  name: any;
+  cat: any;
+  price: any;
+  qty: any;
+  constructor(id: any, name: any, cat: any, price: any, qty: any) {
     this.googleSheetsAuth = new GoogleSheetsAuth();
     this.spreadsheetId = "1klunF-HoDO1PKMQ2Plx7VyHBf5EHuoxvF2J4KJEimE4";
     this.id = id;
@@ -18,7 +45,7 @@ class EquipmentModel {
       const equipments = [];
 
       await this.googleSheetsAuth.authenticate();
-      const auth = this.googleSheetsAuth.getGoogleSheets();
+      const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
@@ -27,49 +54,53 @@ class EquipmentModel {
 
       const rows = getRows.data.values;
 
-      const filteredEquipments = rows.slice(1).map((row, index) => {
-        const equipment = {
-          id: Number(row[0]),
-          name: row[1],
-          cat: row[2],
-          price: Number(row[3]),
-          qty: Number(row[4]),
-        };
+      const filteredEquipments = rows
+        ?.slice(1)
+        .map((row: any, index: number) => {
+          const equipment = {
+            id: Number(row[0]),
+            name: row[1],
+            cat: row[2],
+            price: Number(row[3]),
+            qty: Number(row[4]),
+          };
 
-        return equipment;
-      });
+          return equipment;
+        });
 
-      const equipmentsWithId = filteredEquipments.filter(
-        (equipment) => equipment.id !== null
+      const equipmentsWithId = filteredEquipments?.filter(
+        (equipment: EquipmentStock) => equipment.id !== null
       );
 
       return equipmentsWithId;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 
-  async getEquipmentById(id) {
+  async getEquipmentById(id: number) {
     try {
       const equipments = await this.getEquipment();
-      const equipment = equipments.find((equipment) => equipment.id === id);
+      const equipment = equipments?.find(
+        (equipment: EquipmentStock) => equipment.id === id
+      );
 
       return equipment;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 
-  async getEquipmentByCategory(cat) {
+  async getEquipmentByCategory(cat: string) {
     try {
       const equipments = await this.getEquipment();
-      const equipmentsByCategory = equipments.filter(
-        (equipment) => equipment.cat === cat
+      const equipmentsByCategory = equipments?.filter(
+        (equipment: EquipmentStock) => equipment.cat === cat
       );
 
       return equipmentsByCategory;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 
@@ -79,13 +110,13 @@ class EquipmentModel {
 
       return equipments;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 
-  async createEquipment(equipment) {
+  async createEquipment(equipment: EquipmentStock) {
     try {
-      const equipments = await this.getEquipment();
+      const equipments = (await this.getEquipment()) as EquipmentStock[];
       const newId = equipments.length + 1;
 
       const newEquipment = {
@@ -97,11 +128,11 @@ class EquipmentModel {
       };
 
       await this.googleSheetsAuth.authenticate();
-      const auth = this.googleSheetsAuth.getGoogleSheets();
+      const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
       // Recherche la première ligne vide
       const firstEmptyRow = equipments.findIndex(
-        (equipment) => equipment.name === ""
+        (equipment: EquipmentStock) => equipment.name === ""
       );
 
       // Ajoute une nouvelle ligne à la fin de la feuille de calcul
@@ -124,28 +155,31 @@ class EquipmentModel {
 
       return newEquipment;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
-  async updateEquipmentByCategory(updatedEquipments, cat) {
+  async updateEquipmentByCategory(
+    updatedEquipments: EquipmentStock,
+    cat: string
+  ) {
     try {
       // Récupère tous les équipements
-      const allEquipments = await this.getEquipment();
+      const allEquipments = (await this.getEquipment()) as EquipmentStock[];
 
       // Filtrer les équipements de la catégorie spécifiée
       const equipmentsToUpdate = allEquipments.filter(
-        (equipment) => equipment.cat === cat
+        (equipment: EquipmentStock) => equipment.cat === cat
       );
 
       // Authentification Google Sheets
       await this.googleSheetsAuth.authenticate();
-      const auth = this.googleSheetsAuth.getGoogleSheets();
+      const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
       // Parcourir les équipements à mettre à jour
-      for (const updatedEquipment of updatedEquipments) {
+      for (const updatedEquipment of updatedEquipments as unknown as EquipmentStock[]) {
         // Trouver l'index de l'équipement dans la liste complète
         const indexToUpdate = allEquipments.findIndex(
-          (equipment) => equipment.id === updatedEquipment.id
+          (equipment: EquipmentStock) => equipment.id === updatedEquipment.id
         );
 
         // Mettre à jour les propriétés modifiables
@@ -182,9 +216,9 @@ class EquipmentModel {
 
       return allEquipments;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 }
 
-module.exports = EquipmentModel;
+export default EquipmentModel;

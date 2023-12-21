@@ -1,8 +1,16 @@
-const { google } = require("googleapis");
-const { GoogleSheetsAuth } = require("../services");
-const { v4: uuidv4 } = require("uuid");
+// @ts-nocheck
+import { google } from "googleapis";
+
+import GoogleSheetsAuth from "../services/auth";
+import { v4 as uuidv4 } from "uuid";
+import { Reservation, Session } from "../types/def.type";
+import { Response } from "express";
 
 class CurrentSessionsModel {
+  private googleSheetsAuth: GoogleSheetsAuth;
+  private spreadsheetId: string;
+  private columns: string[];
+
   constructor() {
     this.googleSheetsAuth = new GoogleSheetsAuth();
     this.spreadsheetId = "1klunF-HoDO1PKMQ2Plx7VyHBf5EHuoxvF2J4KJEimE4";
@@ -24,11 +32,11 @@ class CurrentSessionsModel {
     ];
   }
 
-  async getCurrentSessions() {
-    const sessions = [];
+  async get(): Promise<Session[]> {
+    const sessions: Session[] = [];
 
     await this.googleSheetsAuth.authenticate();
-    const auth = this.googleSheetsAuth.getGoogleSheets();
+    const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
     const getRows = await auth.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
@@ -38,15 +46,15 @@ class CurrentSessionsModel {
     const rows = getRows.data.values;
 
     if (rows) {
-      rows.map((row, index) => {
-        const session = {
+      rows.map((row: any, index: number) => {
+        const session: Session = {
           id: row[0],
           name: row[1],
           address: row[2],
           phone: row[3],
           siren: row[4],
-          reservations: [],
-          equipments: row[6].split(" ").map((equipment) => ({
+          reservations: [] as Reservation[],
+          equipments: row[6].split(" ").map((equipment: any) => ({
             name: equipment,
             quantity: 1,
           })),
@@ -59,22 +67,16 @@ class CurrentSessionsModel {
           updatedAt: row[13],
         };
 
-        // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
-        // if (index > 0) {
-        //   session.reservations = session.reservations.concat(
-        //     sessions[index - 1].reservations
-        //   );
-        // }
+        if (index > 0) {
+          session.reservations = session.reservations.concat(
+            sessions[index - 1].reservations
+          );
+        }
 
-        // Parcourir le tableau `reservation` de la session
-        row[5].split(", ").forEach((reservation) => {
-          // Diviser la réservation en deux parties : les heures et la machine
+        row[5].split(", ").forEach((reservation: string) => {
           const [hours, machine] = reservation.split(" ");
-
-          // Convertir les heures en un entier
           const hoursInt = parseInt(hours);
 
-          // Ajouter l'objet de réservation au tableau `reservations` de la session
           session.reservations.push({
             hours: hoursInt,
             machine: machine,
@@ -90,11 +92,11 @@ class CurrentSessionsModel {
     return sessions;
   }
 
-  async getCurrentSessionsById(id) {
-    const sessions = [];
+  async getById(id: any): Promise<Session | {}> {
+    const sessions: Session[] = [];
 
     await this.googleSheetsAuth.authenticate();
-    const auth = this.googleSheetsAuth.getGoogleSheets();
+    const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
     const getRows = await auth.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
@@ -103,16 +105,15 @@ class CurrentSessionsModel {
 
     const rows = getRows.data.values;
 
-    // Convertir les données de session en tableau d'objets
-    rows.map((row, index) => {
-      const session = {
+    rows?.map((row: any, index: number) => {
+      const session: Session = {
         id: row[0],
         name: row[1],
         address: row[2],
         phone: row[3],
         siren: row[4],
-        reservations: [],
-        equipments: [],
+        reservations: [] as Reservation[],
+        equipments: [] as any[],
         notes: row[7],
         createdBy: row[8],
         lastUpdatedBy: row[9],
@@ -122,29 +123,20 @@ class CurrentSessionsModel {
         updatedAt: row[13],
       };
 
-      // Parcourir le tableau `reservation` de la session
-      row[5].split(", ").forEach((reservation) => {
-        // Diviser la réservation en deux parties : les heures et la machine
+      row[5].split(", ").forEach((reservation: string) => {
         const [hours, machine] = reservation.split(" ");
-
-        // Convertir les heures en un entier
         const hoursInt = parseInt(hours);
 
-        // Ajouter l'objet de réservation au tableau `reservations` de la session
         session.reservations.push({
           hours: hoursInt,
           machine: machine,
         });
       });
 
-      row[6].split(", ").forEach((equipment) => {
-        // Diviser l'équipement en deux parties : le nom et la quantité
+      row[6].split(", ").forEach((equipment: string) => {
         const [name, quantity] = equipment.split(" (");
-
-        // Convertir la quantité en un entier
         const quantityInt = parseInt(quantity);
 
-        // Ajouter l'objet d'équipement au tableau `equipments` de la session
         session.equipments.push({
           name,
           quantity: quantityInt,
@@ -152,26 +144,26 @@ class CurrentSessionsModel {
       });
 
       sessions.push(session);
-      index++;
+
       return session;
     });
 
-    // Filtrer les sessions par ID
     const filteredSessions = sessions.filter((session) => session.id === id);
 
-    // S'il n'y a pas de session correspondante, renvoyez un objet vide
     if (!filteredSessions.length) {
       return {};
     }
 
-    // Renvoie la session correspondante
     return filteredSessions[0];
   }
 
-  async updateCurrentSession(id, sessionData) {
+  async update(
+    id: any,
+    sessionData: { equipments: any; reservations: any[]; status: string }
+  ): Promise<any> {
     try {
       await this.googleSheetsAuth.authenticate();
-      const auth = this.googleSheetsAuth.getGoogleSheets();
+      const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
@@ -180,19 +172,16 @@ class CurrentSessionsModel {
 
       const rows = getRows.data.values;
 
-      // Trouve la ligne de la session à mettre à jour
-      const sessionIndex = rows.findIndex((row) => row[0] === id);
+      const sessionIndex = rows?.findIndex((row: any) => row[0] === id);
 
-      const sessionRow = rows.find((row) => row[0] === id);
+      const sessionRow = rows?.find((row: any) => row[0] === id);
 
-      // Vérifie si la session existe
       if (!sessionRow) {
         throw new Error("Session does not exist");
       }
 
-      // Analysez la valeur actuelle de la cellule des équipements et convertissez-la en un tableau d'équipements existants
       const existingEquipments = sessionRow[6]
-        ? sessionRow[6].split(", ").map((item) => {
+        ? sessionRow[6].split(", ").map((item: any) => {
             const [equipment, quantity] = item.split(" (");
             return {
               name: equipment,
@@ -201,42 +190,36 @@ class CurrentSessionsModel {
           })
         : [];
 
-      // Parcourez le tableau existant
       if (sessionData.equipments) {
         for (const equipmentData of sessionData.equipments) {
           const existingEquipment = existingEquipments.find(
-            (item) => item.name === equipmentData.name
+            (item: any) => item.name === equipmentData.name
           );
 
           if (existingEquipment) {
-            // Si vous trouvez un équipement avec le même nom, ajoutez simplement la nouvelle quantité à la quantité existante
             existingEquipment.quantity += equipmentData.quantity;
           } else {
-            // Sinon, ajoutez le nouvel équipement à la liste existante
             existingEquipments.push(equipmentData);
           }
         }
       }
 
-      // Mettez à jour la cellule des équipements avec la liste mise à jour
       sessionRow[6] = existingEquipments
-        .map((equipment) => `${equipment.name} (${equipment.quantity})`)
+        .map((equipment: any) => `${equipment.name} (${equipment.quantity})`)
         .join(", ");
 
-      // Vérifiez si sessionData.reservations est défini avant de le mettre à jour
       if (sessionData.reservations !== undefined) {
-        sessionRow[5] = sessionData.reservations;
+        sessionRow[5] = sessionData.reservations
+          .map((reservation) => `${reservation.hours} ${reservation.machine}`)
+          .join(", ");
       }
 
-      // Vérifiez si sessionData.status est défini avant de le mettre à jour
       if (sessionData.status !== undefined) {
         sessionRow[10] = sessionData.status;
       }
 
-      // Récupère l'index de la ligne
-      const sessionRowIndex = rows.indexOf(sessionRow);
+      const sessionRowIndex = rows?.indexOf(sessionRow);
 
-      // Met à jour la ligne dans Google Sheets
       const writeRow = await auth.spreadsheets.values.update({
         spreadsheetId: this.spreadsheetId,
         range: `CurrentSessions!A${sessionRowIndex + 2}:N${
@@ -250,14 +233,17 @@ class CurrentSessionsModel {
 
       return writeRow.data.values;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 
-  async updateSessionEquipment(id, sessionData) {
+  async updateSessionEquipment(
+    id: number,
+    sessionData: { equipments: any }
+  ): Promise<any> {
     try {
       await this.googleSheetsAuth.authenticate();
-      const auth = this.googleSheetsAuth.getGoogleSheets();
+      const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
@@ -266,18 +252,15 @@ class CurrentSessionsModel {
 
       const rows = getRows.data.values;
 
-      // Trouve la ligne de la session à mettre à jour
-      const sessionRow = rows.filter((row) => row[0] === id)[0];
+      const sessionRow = rows?.filter((row: any) => row[0] === id)[0];
 
-      // Vérifie si la session existe
       if (!sessionRow) {
         throw new Error("Session does not exist");
       }
 
-      // Mettez à jour la colonne des équipements
       sessionRow[6] = sessionData.equipments
         .map(
-          (equipment) => `${equipment.equipment} (${equipment.quantity || 0})`
+          (equipment: any) => `${equipment.name} (${equipment.quantity || 0})`
         )
         .join(", ");
 
@@ -292,30 +275,30 @@ class CurrentSessionsModel {
 
       return writeRow.data.values;
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 
-  async createCurrentSession(sessionData) {
+  async createCurrentSession(sessionData: Session): Promise<any> {
     await this.googleSheetsAuth.authenticate();
-    const auth = this.googleSheetsAuth.getGoogleSheets();
+    const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
     sessionData.status = "pending";
 
     const sessionRow = [
       sessionData.id,
-      sessionData.client.name,
-      sessionData.client.address,
-      sessionData.client.phone,
-      sessionData.client.siren,
-      (sessionData.reservations || [])
-        .map((reservation) => {
+      sessionData.name,
+      sessionData.address,
+      sessionData.phone,
+      sessionData.siren,
+      (sessionData.reservations as Reservation[])
+        .map((reservation: Reservation) => {
           return `${reservation.hours}h ${reservation.machine}`;
         })
         .join(", "),
       (sessionData.equipments || [])
         .map((equipment) => {
-          return `${equipment.equipment} (${equipment.quantity})`;
+          return `${equipment.name} (${equipment.quantity})`;
         })
         .join(", "),
       sessionData.notes,
@@ -339,49 +322,41 @@ class CurrentSessionsModel {
     return writeRow.data.values;
   }
 
-  async stopSession(id) {
+  async stop(id: number): Promise<any> {
     try {
       await this.googleSheetsAuth.authenticate();
-      const auth = this.googleSheetsAuth.getGoogleSheets();
+      const auth = this.googleSheetsAuth.getGoogleSheets() as any;
 
-      // Récupérer les données de la feuille CurrentSessions
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
         range: "CurrentSessions!A3:J",
       });
 
-      const currentSessionsRows = getRows.data.values;
+      const currentSessionsRows = getRows.data ? getRows.data.values : [];
 
-      // Trouver la ligne de la session à arrêter
-      const sessionRow = currentSessionsRows.find((row) => row[0] === id);
+      const sessionRow = currentSessionsRows.find((row: any) => row[0] === id);
 
-      // Vérifier si la session existe
       if (!sessionRow) {
         throw new Error("Session does not exist");
       }
 
-      // Supprimer la session de la feuille CurrentSessions
-      const sessions = response.data.values || [];
-      const sessionIndex = sessions.findIndex(
-        (session) => session[0] === sessionId
+      const sessionIndex = currentSessionsRows.findIndex(
+        (session: any) => session[0] === id
       );
 
-      // Si la session est trouvée, la supprimer
-
       if (sessionIndex > -1) {
-        sessions.splice(sessionIndex, 1);
+        currentSessionsRows.splice(sessionIndex, 1);
 
         await auth.spreadsheets.values.update({
           spreadsheetId: this.spreadsheetId,
           range: `CurrentSessions!A${sessionIndex + 3}:J`,
           valueInputOption: "USER_ENTERED",
           resource: {
-            values: sessions,
+            values: currentSessionsRows,
           },
         });
       }
 
-      // Ajouter la session à la feuille ArchivedSessions
       const archivedSessionsRow = [...sessionRow, ""];
       await auth.spreadsheets.values.append({
         spreadsheetId: this.spreadsheetId,
@@ -394,9 +369,9 @@ class CurrentSessionsModel {
 
       return { success: true };
     } catch (err) {
-      return { error: err.message };
+      return { error: (err as Error).message };
     }
   }
 }
 
-module.exports = CurrentSessionsModel;
+export default CurrentSessionsModel;

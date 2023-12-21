@@ -1,8 +1,7 @@
-const express = require("express");
-const app = express();
-const router = express.Router();
+import express from "express";
+import EquipmentController from "../controllers/equipment.controller";
 
-const { EquipmentController } = require("../controllers");
+const router = express.Router();
 
 router.get(
   "/:cat",
@@ -20,4 +19,4 @@ router.post("/", EquipmentController.post.bind(EquipmentController));
 
 // router.post("/:cat", EquipmentController.postbyCat.bind(EquipmentController));
 
-module.exports = router;
+export default router;
