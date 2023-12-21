@@ -21,6 +21,11 @@ class CurrentSessionsModel {
       "createdAt",
       "endAt",
       "updatedAt",
+      "vertical",
+      "horizontal",
+      "eclipse",
+      "live",
+      "cyclorama",
     ];
   }
 
@@ -32,7 +37,7 @@ class CurrentSessionsModel {
 
     const getRows = await auth.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A3:N",
+      range: "CurrentSessions!A3:S",
     });
 
     const rows = getRows.data.values;
@@ -57,6 +62,11 @@ class CurrentSessionsModel {
           createdAt: row[11],
           endAt: row[12],
           updatedAt: row[13],
+          vertical: row[14],
+          horizontal: row[15],
+          eclipse: row[16],
+          live: row[17],
+          cyclorama: row[18],
         };
 
         // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
@@ -98,7 +108,7 @@ class CurrentSessionsModel {
 
     const getRows = await auth.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A3:N",
+      range: "CurrentSessions!A3:S",
     });
 
     const rows = getRows.data.values;
@@ -120,6 +130,11 @@ class CurrentSessionsModel {
         createdAt: row[11],
         endAt: row[12],
         updatedAt: row[13],
+        vertical: row[14],
+        horizontal: row[15],
+        eclipse: row[16],
+        live: row[17],
+        cyclorama: row[18],
       };
 
       // Parcourir le tableau `reservation` de la session
@@ -175,7 +190,7 @@ class CurrentSessionsModel {
 
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
-        range: "CurrentSessions!A2:N",
+        range: "CurrentSessions!A2:S",
       });
 
       const rows = getRows.data.values;
@@ -239,7 +254,7 @@ class CurrentSessionsModel {
       // Met à jour la ligne dans Google Sheets
       const writeRow = await auth.spreadsheets.values.update({
         spreadsheetId: this.spreadsheetId,
-        range: `CurrentSessions!A${sessionRowIndex + 2}:N${
+        range: `CurrentSessions!A${sessionRowIndex + 2}:S${
           sessionRowIndex + 2
         }`,
         valueInputOption: "USER_ENTERED",
@@ -261,7 +276,7 @@ class CurrentSessionsModel {
 
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
-        range: "CurrentSessions!A3:J",
+        range: "CurrentSessions!A3:S",
       });
 
       const rows = getRows.data.values;
@@ -283,7 +298,7 @@ class CurrentSessionsModel {
 
       const writeRow = await auth.spreadsheets.values.update({
         spreadsheetId: this.spreadsheetId,
-        range: `CurrentSessions!A3${sessionRow}:J${sessionRow}`,
+        range: `CurrentSessions!A3${sessionRow}:S${sessionRow}`,
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [sessionRow],
@@ -325,11 +340,16 @@ class CurrentSessionsModel {
       sessionData.createdAt,
       sessionData.endAt,
       sessionData.updatedAt,
+      sessionData.vertical,
+      sessionData.horizontal,
+      sessionData.eclipse,
+      sessionData.live,
+      sessionData.cyclorama,
     ];
 
     const writeRow = await auth.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
-      range: "CurrentSessions!A3:N",
+      range: "CurrentSessions!A3:S",
       valueInputOption: "USER_ENTERED",
       resource: {
         values: [sessionRow],
@@ -347,7 +367,7 @@ class CurrentSessionsModel {
       // Récupérer les données de la feuille CurrentSessions
       const getRows = await auth.spreadsheets.values.get({
         spreadsheetId: this.spreadsheetId,
-        range: "CurrentSessions!A3:J",
+        range: "CurrentSessions!A3:S",
       });
 
       const currentSessionsRows = getRows.data.values;
@@ -373,7 +393,7 @@ class CurrentSessionsModel {
 
         await auth.spreadsheets.values.update({
           spreadsheetId: this.spreadsheetId,
-          range: `CurrentSessions!A${sessionIndex + 3}:J`,
+          range: `CurrentSessions!A${sessionIndex + 3}:S`,
           valueInputOption: "USER_ENTERED",
           resource: {
             values: sessions,
@@ -385,7 +405,7 @@ class CurrentSessionsModel {
       const archivedSessionsRow = [...sessionRow, ""];
       await auth.spreadsheets.values.append({
         spreadsheetId: this.spreadsheetId,
-        range: "ArchivedSessions!A2:J",
+        range: "ArchivedSessions!A2:S",
         valueInputOption: "USER_ENTERED",
         resource: {
           values: [archivedSessionsRow],
