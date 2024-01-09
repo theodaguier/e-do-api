@@ -45,7 +45,6 @@ class CurrentSessionsController {
     try {
       const { id } = req.params;
       const {
-        id,
         client,
         reservations,
         equipments,
