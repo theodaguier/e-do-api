@@ -1,4 +1,28 @@
-const { name } = require("ejs");
+// const session = {
+//   id: row[0],
+//   name: row[1],
+//   address: row[2],
+//   phone: row[3],
+//   siren: row[4],
+//   reservations: [],
+//   equipments: row[6].split(" ").map((equipment) => ({
+//     name: equipment,
+//     quantity: 1,
+//   })),
+//   notes: row[7],
+//   createdBy: row[8],
+//   lastUpdatedBy: row[9],
+//   status: row[10],
+//   createdAt: row[11],
+//   endAt: row[12],
+//   updatedAt: row[13],
+//   vertical: row[14],
+//   horizontal: row[15],
+//   eclipse: row[16],
+//   live: row[17],
+//   cyclorama: row[18],
+// };
+
 const { CurrentSessionsModel, EquipmentModel } = require("../models");
 
 class CurrentSessionsController {
@@ -21,6 +45,7 @@ class CurrentSessionsController {
     try {
       const { id } = req.params;
       const {
+        id,
         client,
         reservations,
         equipments,
@@ -28,6 +53,12 @@ class CurrentSessionsController {
         status,
         createdAt,
         endAt,
+        updatedAt,
+        live,
+        vertical,
+        horizontal,
+        eclipse,
+        cyclorama,
       } = req.body;
 
       // Vérifie si la session existe
@@ -46,6 +77,12 @@ class CurrentSessionsController {
         status,
         createdAt,
         endAt,
+        updatedAt,
+        live,
+        vertical,
+        horizontal,
+        eclipse,
+        cyclorama,
       };
 
       // Met à jour la session
@@ -92,6 +129,11 @@ class CurrentSessionsController {
         createdAt,
         endAt,
         updatedAt,
+        live,
+        vertical,
+        horizontal,
+        eclipse,
+        cyclorama,
       } = req.body;
 
       // Vérifie si l'identifiant de session est valide
@@ -104,9 +146,16 @@ class CurrentSessionsController {
         client,
         reservations,
         equipments,
+        notes,
+        status,
         createdAt,
         endAt,
         updatedAt,
+        live,
+        vertical,
+        horizontal,
+        eclipse,
+        cyclorama,
       };
 
       // Crée la session
