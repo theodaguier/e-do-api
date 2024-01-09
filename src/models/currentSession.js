@@ -26,6 +26,11 @@ class CurrentSessionsModel {
       "eclipse",
       "live",
       "cyclorama",
+      "verticalStop",
+      "horizontalStop",
+      "eclipseStop",
+      "liveStop",
+      "cycloramaStop",
     ];
   }
 
@@ -67,6 +72,11 @@ class CurrentSessionsModel {
           eclipse: row[16],
           live: row[17],
           cyclorama: row[18],
+          verticalStop: row[19],
+          horizontalStop: row[20],
+          eclipseStop: row[21],
+          liveStop: row[22],
+          cycloramaStop: row[23],
         };
 
         // Si ce n'est pas la première session, ajouter les objets de réservation de la session précédente au tableau `reservations` de la session actuelle
@@ -135,6 +145,11 @@ class CurrentSessionsModel {
         eclipse: row[16],
         live: row[17],
         cyclorama: row[18],
+        verticalStop: row[19],
+        horizontalStop: row[20],
+        eclipseStop: row[21],
+        liveStop: row[22],
+        cycloramaStop: row[23],
       };
 
       // Parcourir le tableau `reservation` de la session
@@ -345,6 +360,11 @@ class CurrentSessionsModel {
       sessionData.eclipse,
       sessionData.live,
       sessionData.cyclorama,
+      sessionData.verticalStop,
+      sessionData.horizontalStop,
+      sessionData.eclipseStop,
+      sessionData.liveStop,
+      sessionData.cycloramaStop,
     ];
 
     const writeRow = await auth.spreadsheets.values.append({

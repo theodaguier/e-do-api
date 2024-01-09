@@ -58,6 +58,10 @@ class CurrentSessionsController {
         horizontal,
         eclipse,
         cyclorama,
+        verticalStop,
+        horizontalStop,
+        eclipseStop,
+        cycloramaStop,
       } = req.body;
 
       // Vérifie si la session existe
@@ -82,6 +86,10 @@ class CurrentSessionsController {
         horizontal,
         eclipse,
         cyclorama,
+        verticalStop,
+        horizontalStop,
+        eclipseStop,
+        cycloramaStop,
       };
 
       // Met à jour la session
@@ -133,6 +141,10 @@ class CurrentSessionsController {
         horizontal,
         eclipse,
         cyclorama,
+        verticalStop,
+        horizontalStop,
+        eclipseStop,
+        cycloramaStop,
       } = req.body;
 
       // Vérifie si l'identifiant de session est valide
@@ -155,6 +167,10 @@ class CurrentSessionsController {
         horizontal,
         eclipse,
         cyclorama,
+        verticalStop,
+        horizontalStop,
+        eclipseStop,
+        cycloramaStop,
       };
 
       // Crée la session
