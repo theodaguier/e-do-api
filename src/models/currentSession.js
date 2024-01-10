@@ -263,6 +263,23 @@ class CurrentSessionsModel {
         sessionRow[10] = sessionData.status;
       }
 
+      sessionRow[7] = sessionData.notes;
+      sessionRow[8] = sessionData.createdBy;
+      sessionRow[9] = sessionData.lastUpdatedBy;
+      sessionRow[11] = sessionData.createdAt;
+      sessionRow[12] = sessionData.endAt;
+      sessionRow[13] = sessionData.updatedAt;
+      sessionRow[14] = sessionData.vertical;
+      sessionRow[15] = sessionData.horizontal;
+      sessionRow[16] = sessionData.eclipse;
+      sessionRow[17] = sessionData.live;
+      sessionRow[18] = sessionData.cyclorama;
+      sessionRow[19] = sessionData.verticalStop;
+      sessionRow[20] = sessionData.horizontalStop;
+      sessionRow[21] = sessionData.eclipseStop;
+      sessionRow[22] = sessionData.liveStop;
+      sessionRow[23] = sessionData.cycloramaStop;
+
       // Récupère l'index de la ligne
       const sessionRowIndex = rows.indexOf(sessionRow);
 
